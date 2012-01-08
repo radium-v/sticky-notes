@@ -235,11 +235,11 @@
 
 		.textbox {
 			background: #111111;
+			border: 1px solid #454545;
 			border-radius: 10px;
-			border: none;
 			color: #EEEEEE;
 			display: block;
-			font: 13px Helvetica, Arial, sans-serif;
+			font: 16px/20px Helvetica, Arial, sans-serif;
 		}
 
 		.textbox:focus {
@@ -519,7 +519,6 @@
 		.textbox {
 			position: absolute;
 			padding: 15px 20px;
-			font-size: 14px;
 			left: 10px;
 			right: 10px;
 			top: 95px;
@@ -645,7 +644,6 @@
 		.textbox {
 			position: absolute;
 			padding: 15px 20px;
-			font-size: 14px;
 			left: 10px;
 			right: 10px;
 			top: 95px;
@@ -668,4 +666,4 @@
 		}
 }
 
-/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5806:5834,7195:7223}.white{388:395} */
+/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5806:5834,7213:7241}.white{388:395} */
