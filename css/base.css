@@ -6,4 +6,8 @@
 @import url('fonts.css');
 
 /* Default */
-@import url('default.css');
+/* @import url('default.css'); */
+
+@import url('animation.css');
+
+@import url('media.css');

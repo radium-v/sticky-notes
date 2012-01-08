@@ -10,33 +10,24 @@
 </head>
 <body>
 	<header>
-		<h1 class="app-title">Sticky Notes</h1>
-		<div id="sidepanel">
-			<ul id="controlpanel" class="cpanel">
-					<li id="new_note"><span class="tooltip">new note</span></li>
-					<li id="new_list"><span class="tooltip">new list</span></li>
-					<li id="new_appt"><span class="tooltip">new appt</span></li>
-					<li id="new_pic"><span class="tooltip">new pic</span></li>
-			</ul>
-			<div id="view" class="sorted"><span class="tooltip">Sort</span></div>
+		<div class="side-panel" id="sidepanel">
+			<div id="new_note" class="newnote"><span class="tooltip right">new note</span></div>
+			<div id="view" class="free"><span class="tooltip">Sort</span></div>
 		</div>
 	</header>
-	<section id="container">
+	<section id="container" class="container">
 		<ul id="stickies"></ul>
 	</section>
-	<!--<input type="button" value="Show Sidebar" id="showhide" disabled="true">-->
 	<section class="sidebar right" id="sidebar">
-		<input type="text" class="sidebar-title" value="Untitled Note">
+		<div class="title-box"><input type="text" class="sidebar-title" id="title" value="Sticky Notes">
 		<div class="sidebarform">
-			<div class="textbox" contenteditable="true">Hello, world!</div>
+			<textarea class="textbox" id="note_text">Welcome! Click the plus button in the upper-left corner to create a new note.</textarea>
 			<ul class="note-options">
-				<li id="note_info"></li>
-				<li id="note_favorite"></li>
-				<li id="note_list"></li>
-				<li id="note_pic"></li>
+				<li id="note_info"><span class="tooltip left">info</span></li>
+				<li id="note_favorite"><span class="tooltip left">star</span></li>
+				<li id="note_save"><span class="tooltip left">save notes</span></li>
 			</ul>
 		</div>
-		<div class="sidebar-handle"></div>
 	</section>
 	<script type="text/javascript" src="js/sticky-core.js"></script>
 </body>

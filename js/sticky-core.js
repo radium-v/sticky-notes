@@ -1,7 +1,10 @@
 var StickyApp = (function () {'use strict';
 
 	//Constants
-	var DEFAULT_TEXT = 'Hello, world! \nThis is a note. Please write on me, drag me around, or delete me.', captured, topZ, ordering, tiles, workspace, toggleView, controlPanel, derp;
+	var DEFAULT_TEXT = 'Hello, world! This is a note.';
+	var DEFAULT_TITLE = 'Untitled Note';
+	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-left corner to create a new note.';
+	var selectedTile, captured, topZ, ordering, tiles, workspace, sidebar, toggleView, newnote, derp, selTile;
 
 	topZ = 0;
 	ordering = [
@@ -11,26 +14,24 @@ var StickyApp = (function () {'use strict';
 	tiles = [];
 
 	function Tile(tileType) {
-		var self, tile, tileBody, closeButton, handle;
-		self = this;
+		var self = this;
 		if (self instanceof Tile) {
-			tile = document.createElement('li');
-			tileBody = document.createElement('div');
-			closeButton = document.createElement('div');
-			handle = document.createElement('div');
-			tile.className = 'tile';
-			tileBody.className = 'body ' + tileType;
-			closeButton.className = 'btn-close';
-			closeButton.innerHTML = '&#10005;';
-			handle.className = 'handle';
-			tileBody.setAttribute('contenteditable', 'true');
-			self.tile = tile;
+			self.tile = document.createElement('li');
+			self.tileBody = document.createElement('div');
+			self.closeButton = document.createElement('div');
+			self.handle = document.createElement('div');
+			self.tile.className = 'tile';
+			self.tileBody.className = 'body ' + tileType;
+			self.closeButton.className = 'btn-close';
+			self.closeButton.innerHTML = '&#10005;';
+			self.handle.className = 'handle';
 			self.id = (Math.uuid(8));
+			self.title = DEFAULT_TITLE;
+			self.text = DEFAULT_TEXT;
 			self.tile.id = self.id;
-			tileBody.innerHTML = DEFAULT_TEXT;
-			self.tile.appendChild(tileBody);
-			self.tile.appendChild(closeButton);
-			self.tile.appendChild(handle);
+			self.tile.appendChild(self.tileBody);
+			self.tile.appendChild(self.closeButton);
+			self.tile.appendChild(self.handle);
 			self.zIndex = ++topZ;
 			self.tile.addEventListener('mousedown', function (e) {
 				return self.onMouseDown(e);
@@ -51,11 +52,18 @@ var StickyApp = (function () {'use strict';
 		set id(x) {
 			this._id = x;
 		},
+		get title() {
+			return this._title;
+		},
+		set title(x) {
+			this._title = x;
+		},
 		get text() {
-			return this.tileBody.innerHTML();
+			return this._text;
 		},
 		set text(x) {
-			this.tileBody.innerHTML = x;
+			this.tileBody.innerText = x;
+			this._text = x;
 		},
 		get left() {
 			return this._left;
@@ -131,45 +139,81 @@ var StickyApp = (function () {'use strict';
 			captured = e.target.parentNode;
 			document.removeEventListener('mousemove', this.mouseMoveHandler, false);
 			document.removeEventListener('mouseup', this.mouseUpHandler, false);
-			console.log('Dropped tile ' + captured.id + 'at x:' + captured.style.left + ', y:' + captured.style.top);
-		},
-
-		addShadow : function (e) {
-			var shadow = document.createElement('span');
-			shadow.setAttribute('class', 'shadow');
-			this.tile.appendChild(shadow);
 		}
+
 	}
 
 	function focusTile(e) {
+		blurTile();
 		captured = e.target.parentNode;
 		if(captured.className.indexOf('tile') > -1) {
 			var thisTile = getTile(captured);
-			if (!('focusHandler' in thisTile)) {
+			var shadow = document.createElement('span');
+			shadow.setAttribute('class', 'shadow');
+			thisTile.tile.appendChild(shadow);
+			thisTile.tile.className += ' sel';
+			return thisTile;
+			/* if (!('focusHandler' in thisTile)) {
 				thisTile.focusHandler = function(e) {
-					return thisTile.addShadow(e);
+					return thisTile.select(e);
 				}
 			}
-			thisTile.tile.addEventListener('webkitAnimationEnd', thisTile.focusHandler, true);
+			thisTile.tile.addEventListener('webkitAnimationEnd', thisTile.focusHandler, true); */
 		}
 	}
 
-	function blurTile(e) {
-		captured = e.target.parentNode;
-		var thisTile = getTile(captured);
+	function blurTile() {
+		/* captured = e.target.parentNode;
+		var thisTile = getTile(captured); */
 		var shadow = document.getElementsByClassName('shadow');
+		var c;
 		for (var i = 0; i < shadow.length; i++) {
-			shadow[i].parentNode.removeChild(shadow[i]);
+			c = shadow[i].parentNode.className;
+			if (c.indexOf('sel') > -1) {
+				c = 
+				shadow[i].parentNode.removeChild(shadow[i]);
+			}
 		}
-		if ('focusHandler' in thisTile) {
+		/* if ('focusHandler' in thisTile) {
 			thisTile.tile.removeEventListener('webkitAnimationEnd', thisTile.focusHandler, true);
+		} */
+	}
+
+	function selectTile(el) {
+
+		if(el.className.indexOf('tile') > -1) {
+			var thisTile = getTile(el);
+			deselectTile();
+			var txtSidebarText = document.getElementById('note_text');
+			txtSidebarText.value = thisTile.text;
+			var txtSidebarTitle = document.getElementById('title');
+			txtSidebarTitle.value = thisTile.title;
+			if(thisTile.tile.className.indexOf('sel') === -1) {
+				thisTile.tile.className += ' sel';
+				thisTile.zIndex = topZ++;
+			}
+
+			txtSidebarText.focus();
+			return thisTile;
 		}
+	}
+
+	function deselectTile() {
+		var s = document.getElementsByClassName('sel');
+		var str;
+		for(var i = 0; i < s.length; i++) {
+			str = s[i].className;
+			s[i].className = str.substring(0, str.indexOf('sel')) + str.substring(str.indexOf('sel') + 3);
+		}
+
+		document.getElementById('title').value = 'Sticky Notes';
+		document.getElementById('note_text').value = DEFAULT_STARTER_TEXT;
 	}
 
 	function onClick(e) {
 		captured = e.target;
 		if (captured.className.indexOf('body') > -1) {
-			captured.parentNode.style.zIndex = topZ++;
+			selectedTile = selectTile(captured.parentNode);
 		} else if (captured.id === 'view') {
 			changeOrder();
 			captured.className = ordering[1][0];
@@ -177,42 +221,38 @@ var StickyApp = (function () {'use strict';
 			removeTile(captured.parentNode);
 		} else if (captured.id === 'new_note') {
 			var newTile = addNewTile('note');
+			selectedTile = selectTile(newTile.tile);
 			setPosition();
-			console.log('Created Note ' + newTile.id);
-		} else if (captured.id === 'new_list') {
-			console.log('Added a new list');
+		} else if (captured.id === 'note_save') {
+		} else if (captured.id === 'container') {
+			deselectTile();
 		}
 	}
 
-	function onHotKey(e) {
+	function onKey(e) {
 		captured = e.target;
 		var k = e.keyCode;
-		if (captured.className.indexOf('body') > -1) {
-			if (k === 27) {
-				e.preventDefault;
-				if (window.confirm('Are you sure you would like to delete this sticky?')) {
-					var t = captured.parentNode;
-					removeTile(t);
-				}
-				return false;
+		if (captured.id === 'note_text') {
+			switch (k) {
+				
 			}
+			selectedTile.text = captured.value;
+		}
+
+		if (captured.id === 'title') {
+			selectedTile.title = captured.value;
 		}
 	}
 
 	function addNewTile (tileType) {
 		tiles.push(new Tile(tileType));
 		workspace.appendChild(tiles[tiles.length - 1].tile);
-		tiles[tiles.length - 1].tile.childNodes[0].focus();
 		return tiles[tiles.length - 1];
 	}
 
 	function removeTile (thisTile) {
-		if (thisTile.className === 'tile') {
-			if (thisTile.nextSibling) {
-				thisTile.nextSibling.childNodes[0].focus();
-			} else if (thisTile.previousSibling) {
-				thisTile.previousSibling.childNodes[0].focus();
-			}
+		deselectTile();
+		if (thisTile.className.indexOf('tile') > -1) {
 			workspace.removeChild(thisTile);
 			for (var i = 0; i < tiles.length; i++) {
 				if (tiles[i].tile === thisTile) {
@@ -255,16 +295,16 @@ var StickyApp = (function () {'use strict';
 
 	function init() {
 		workspace = document.getElementById('stickies');
-		workspace.addEventListener('click', function (e) { return onClick(e) }, false);
-		// workspace.addEventListener('keyup', function (e) { return onHotKey(e) }, false);
-		workspace.addEventListener('focus', function (e) {return focusTile(e) }, true);
-		workspace.addEventListener('blur', function (e) {return blurTile(e) }, true);
+		window.addEventListener('click', function (e) { return onClick(e) }, true);
+
+		sidebar = document.getElementById('sidebar');
+		sidebar.addEventListener('keyup', function (e) { return onKey(e) }, false);
 		changeOrder(ordering);
-		$(workspace).sortable({'items': '.tile', 'handle': '.handle', 'placeholder': 'placeholder', 'revert': '140ms', 'tolerance': 'pointer', 'zIndex': '2000'}).sortable('disable');
+		$(workspace).sortable({'items': '.tile', 'placeholder': 'placeholder', 'revert': '140ms', 'tolerance': 'pointer', 'zIndex': '2000'}).sortable('disable');
 		toggleView = document.getElementById('view');
 		toggleView.addEventListener('click', function(e) {return onClick(e) }, false);
-		controlPanel = document.getElementById('controlpanel');
-		controlPanel.addEventListener('click', function(e) {return onClick(e) }, false);
+
+		changeOrder();
 	}
 
 	init();
