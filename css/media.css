@@ -184,6 +184,7 @@
 		}
 
 		.body {
+			box-shadow: 0 5px 15px rgba(94, 54, 34, 1);
 			-webkit-animation: blur 0.17s ease-out forwards;
 			-webkit-user-select: none;
 			height: 100%;
@@ -234,7 +235,8 @@
 			}
 
 		.textbox {
-			background: #111111;
+			background: rgba(16, 16, 16, 0.4);
+			box-shadow: 0 0 20px #000000;
 			border: 1px solid #454545;
 			border-radius: 10px;
 			color: #EEEEEE;
@@ -666,4 +668,4 @@
 		}
 }
 
-/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5806:5834,7213:7241}.white{388:395} */
+/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5806:5834,7307:7335}.white{388:395} */
