@@ -1,0 +1,37 @@
+@-webkit-keyframes focus {
+	from {
+		-webkit-transform: scale(0.8);
+	}
+	50% { -webkit-transform: scale(1); }
+	75% { -webkit-transform: scale(1.2); }
+	to {
+		-webkit-transform: scale(1);
+	}
+}
+
+@-webkit-keyframes blur {
+	from { -webkit-transform: scale(1) }
+	50% { -webkit-transform: scale(0.8) }
+	75% { -webkit-transform: scale(0.6) }
+	to { -webkit-transform: scale(0.8) }
+}
+
+@-webkit-keyframes slideleft {
+	from { right: -100% }
+	to { right: 0 }
+}
+
+@-webkit-keyframes slideright {
+	from { right: 0 }
+	to { 
+		display: none;
+		right: -100%
+	}
+}
+
+
+@-webkit-keyframes pulse {
+	from { opacity: 0.1 }
+	50% { opacity: 1 }
+	to { opacity: 0.1 }
+}
