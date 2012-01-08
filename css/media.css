@@ -164,6 +164,7 @@
 	
 	#stickies {
 		margin-top: 30px;
+		width: 100%;
 	}
 
 	.tile, .placeholder {
@@ -382,6 +383,7 @@
 		height: 50%;
 		width: 100%;
 		position: relative;
+		box-shadow: inset 0 10px 15px #000000;
 	}
 
 		.sidebar-title {
@@ -510,6 +512,7 @@
 		width: 320px;
 		height: 100%;
 		float: right;
+		box-shadow: inset 10px 0 15px #000000;
 	}
 
 		.sidebar-title {
@@ -609,8 +612,7 @@
 		bottom: 30px;
 		top: 30px;
 		border-radius: 10px;
-		box-shadow: inset 0 0 10px rgba(94, 54, 34, 1),
-					0 5px 10px rgba(94, 54, 34, 0.4);
+		box-shadow: inset 0 5px 10px rgba(94, 54, 34, 0.8);
 		float: left;
 		max-width: 960px;
 		margin: auto;
@@ -635,6 +637,7 @@
 		width: 420px;
 		height: 100%;
 		float: right;
+		box-shadow: inset 10px 0 15px #000000;
 	}
 
 		.sidebar-title {
@@ -668,4 +671,4 @@
 		}
 }
 
-/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5806:5834,7307:7335}.white{388:395} */
+/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5821:5849,7322:7350}.white{388:395} */
