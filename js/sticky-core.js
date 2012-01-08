@@ -17,7 +17,7 @@ var StickyApp = (function () {'use strict';
 		var self = this;
 		if (self instanceof Tile) {
 			self.tile = document.createElement('li');
-			self.tileBody = document.createElement('div');
+			self.tileBody = document.createElement('pre');
 			self.closeButton = document.createElement('div');
 			self.handle = document.createElement('div');
 			self.tile.className = 'tile';
@@ -33,9 +33,11 @@ var StickyApp = (function () {'use strict';
 			self.tile.appendChild(self.closeButton);
 			self.tile.appendChild(self.handle);
 			self.zIndex = ++topZ;
-			self.tile.addEventListener('mousedown', function (e) {
-				return self.onMouseDown(e);
-			}, false);
+			if (!('mouseDownHandler' in self)) {
+				self.mouseDownHandler = function(e) { return self.onMouseDown(e) };
+			}
+			var mouseDownHandler
+			self.tile.addEventListener('mousedown', self.mouseDownHandler, false);
 			self.left = Math.round((Math.random() * (window.innerWidth / 2)));
 			self.top = Math.round((Math.random() * (window.innerHeight / 2)));
 			self.tile.style.position = 'absolute';
@@ -46,36 +48,22 @@ var StickyApp = (function () {'use strict';
 	}
 
 	Tile.prototype = {
-		get id() {
-			return this._id;
-		},
-		set id(x) {
-			this._id = x;
-		},
-		get title() {
-			return this._title;
-		},
-		set title(x) {
-			this._title = x;
-		},
-		get text() {
-			return this._text;
-		},
+		get id() { return this._id; },
+		set id(x) { this._id = x; },
+		get title() { return this._title;},
+		set title(x) { this._title = x; },
+		get text() { return this._text; },
 		set text(x) {
 			this.tileBody.innerText = x;
 			this._text = x;
 		},
-		get left() {
-			return this._left;
-		},
+		get left() { return this._left; },
 		set left(x) {
 			var val = x + 'px';
 			this.tile.style.left = val;
 			this._left = x;
 		},
-		get top () {
-			return this._top;
-		},
+		get top () { return this._top; },
 		set top (x) {
 			var val = x + 'px';
 			this.tile.style.top = val;
@@ -114,8 +102,8 @@ var StickyApp = (function () {'use strict';
 			this._zIndex = x;
 		},
 
-		onMouseDown: function (e) {
-			if (e.target.className === 'handle' && ordering[0][0] === 'free') {
+		onMouseDown : function (e) {
+			if (ordering[0][0] === 'free') {
 				captured = this;
 				this.startX = e.clientX - this.tile.offsetLeft;
 				this.startY = e.clientY - this.tile.offsetTop;
@@ -141,42 +129,6 @@ var StickyApp = (function () {'use strict';
 			document.removeEventListener('mouseup', this.mouseUpHandler, false);
 		}
 
-	}
-
-	function focusTile(e) {
-		blurTile();
-		captured = e.target.parentNode;
-		if(captured.className.indexOf('tile') > -1) {
-			var thisTile = getTile(captured);
-			var shadow = document.createElement('span');
-			shadow.setAttribute('class', 'shadow');
-			thisTile.tile.appendChild(shadow);
-			thisTile.tile.className += ' sel';
-			return thisTile;
-			/* if (!('focusHandler' in thisTile)) {
-				thisTile.focusHandler = function(e) {
-					return thisTile.select(e);
-				}
-			}
-			thisTile.tile.addEventListener('webkitAnimationEnd', thisTile.focusHandler, true); */
-		}
-	}
-
-	function blurTile() {
-		/* captured = e.target.parentNode;
-		var thisTile = getTile(captured); */
-		var shadow = document.getElementsByClassName('shadow');
-		var c;
-		for (var i = 0; i < shadow.length; i++) {
-			c = shadow[i].parentNode.className;
-			if (c.indexOf('sel') > -1) {
-				c = 
-				shadow[i].parentNode.removeChild(shadow[i]);
-			}
-		}
-		/* if ('focusHandler' in thisTile) {
-			thisTile.tile.removeEventListener('webkitAnimationEnd', thisTile.focusHandler, true);
-		} */
 	}
 
 	function selectTile(el) {

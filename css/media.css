@@ -16,7 +16,7 @@
 
 	body {
 		-webkit-user-select: none;
-		background: url('../img/bg.png') 0 0 repeat #171A22;
+		background: url(../img/sidebar-bg.png) 0 0 repeat #171A22;
 		color: #FFFFFF;
 		font: 14px/17px Helvetica, Arial, sans-serif;
 		position: fixed;
@@ -27,16 +27,13 @@
 		min-height: 480px;
 	}
 	
-	.container {
-		background: url('../img/board.png') 0 0 repeat transparent;
+	.container {		
 		overflow: auto;
 		position: relative;
 		z-index: 1;
 	}
 
 		.sidebar {
-			background: url(../img/sidebar-bg.png) 0 0 repeat transparent;
-			font: Helvetica, Arial, sans-serif;
 			position: relative;
 		}
 
@@ -52,19 +49,15 @@
 			}
 
 			.side-panel {
-				height: 20px;
+				height: 30px;
 				display: block;
-				left: 0;
+				right: 0;
 				position: absolute;
 				top: 0;
 				padding: 5px;
 				text-align: center;
-				width: 100px;
+				width: 30px;
 				z-index: 5000
-			}
-
-			.side-panel:hover {
-				background: url(../img/plus-hover.png) 0 0 no-repeat transparent;
 			}
 
 			.tooltip {
@@ -149,7 +142,7 @@
 				}
 
 			.newnote {
-				background: url(data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUBAMAAAB/pwA+AAAAA3NCSVQICAjb4U/gAAAAKlBMVEX///8iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiLX9h14AAAADnRSTlMAESIzRFV3iJm7zN3u/z1IXjEAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS83LzEyd8AaIgAAAIBJREFUCJljYGBgjLx7d6oAAwh43gWCKSAW+927q1bdvVsAZObebWFg8Lh7jYGB5e5VkFzsXQcGqbsBDGpJDKx3FzLE3gAKASV6rzLMPczA4HuFgcHmJsPdBUwutdddFLjvAplsIHMTuNCYcAVI2pAMQ7ICyWIk5yA7EsnpcA8BANsoUSlLgAO7AAAAAElFTkSuQmCC) 0 0 no-repeat transparent;
+				background: url(data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzgvMTIvowp0AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAACAUlEQVRIie2WzWpTQRTHf1NEChHBJ1A3LgrZCC4KUgVzIi2+QNNShFKXXbupaezGdZeKIMXGF5DS5kSwVejKboQu3ESfQBADJZtxkXPbk9x7JX406aJ/GGbO5//O3Dnn3hBjZBQYGwnrOfEwcSFLGUJI6VS1AMwAS8Ad4KKZOsAu8ALYEpF2f2zWBQ6Zyj5iVb0PPAbu/mYTAO+BZyKy88/EqvoUWHHmDvAFODJ5HLjByQkArInIk78mVtUqsOpMr4CXIvLR+6vqbWAReOjUqyJS+2NiO95tUx0BSyLyOuXc+wDzdN/1uKmmRWR7YOJms1kAFJg0VUVE3jiC68CciZsi0nK2WaBu4j4gpVIpdeHyymnGkW54UkMRWLNR9Abz3TBx0nKlkEf8yOY2sJ5h/56zTrBusT5XDzLrGJiy+WuM8QCOj3fC9Lec7z1VvWzrQxFpxRgPQgjfzH+KDOTtOCmNdrlcTi5BBXhro+p8q05fAbCYn325BiI+deQRd2wuNBqNpJvUgQc2as635vR1AIu51JerB3nveA8oAddCCDeBT1YyLQBV/cHJcb8TkQ8+2GKuulwp5O34uc0FYDnDfiVnnWDZYn2ugYi36BY/wII1BY/PdPv3iq2PYb4LJu5brhTOVssc6UfCJR3+Z9GRD/9HwJGf/q/PMHDmWuY58X/HL/V99YaTt3b3AAAAAElFTkSuQmCC) 0 0 no-repeat transparent;
 				display: block;
 				height: 30px;
 				position: relative;
@@ -158,9 +151,25 @@
 			}
 
 
-			#view, #view > * { 
-				display: none;
+			#view {
+				-webkit-transition:  0.14s linear;
+				display: block;
+				height: 60px;
+				bottom: 10px;
+				right: 10px;
+				margin: 0 12px;
+				position: fixed;
+				width: 60px;
+				z-index: 5000
 			}
+
+				#view.free {
+					background: url(../img/sprites.png) no-repeat no-repeat -86px -174px transparent;
+				}
+
+				#view.sorted {
+					background: url(../img/sprites.png) no-repeat no-repeat -10px -174px transparent;
+				}
 	
 	#stickies {
 		margin-top: 30px;
@@ -173,6 +182,7 @@
 		display: inline-block;
 		position: relative;
 		vertical-align: top;
+		z-index: 2;
 	}
 
 	.placeholder {
@@ -185,23 +195,26 @@
 		}
 
 		.body {
-			box-shadow: 0 5px 15px rgba(94, 54, 34, 1);
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8),
+						inset 0 0 10px rgba(220, 220, 240, 0.8);
 			-webkit-animation: blur 0.17s ease-out forwards;
 			-webkit-user-select: none;
-			height: 100%;
-			width: 100%;
+			height: 98%;
+			width: 98%;
+			opacity: 0.7;
 			display: block;
 			cursor: pointer;
-			word-wrap: break-word;
-			overflow-y: hidden;
+			overflow: hidden;
+			padding: 2%;
 		}
 
 			.tile:hover {
-				z-index: 10000;
+				z-index: 1000 !important;
 			}
 
-			.tile:hover .body, .sel > .body {
+			.tile:hover > .body, .sel > .body {
 				-webkit-animation: focus 0.14s linear forwards;
+				opacity: 1;
 			}
 
 			.body ~ .btn-close {
@@ -344,7 +357,7 @@
 
 
 
-@media all and (min-width: 0) and (max-width: 799px) {
+@media all and (min-width: 0) and (max-width: 824px) {
 
 	.container {
 		width: 100%;
@@ -365,13 +378,14 @@
 	.tile, .placeholder {
 		font-size: 16px;
 		line-height: 16px;
-		height: 120px;
-		width: 120px;
+		height: 165px;
+		width: 165px;
 		margin: 5px;
 	}
 
 		.sel > .body {
 			box-shadow: 0 0 14px rgba(0,0,0,0.8);
+			opacity: 1;
 		}
 
 			.body ~ .btn-close {
@@ -484,24 +498,21 @@
 
 
 
-
-
-
-
-@media all and (min-width: 800px) and (max-width: 959px) {
+@media all and (min-width: 825px) and (max-width: 1119px) {
 	.container {
 		position: absolute;
 		left: 0;
 		float: left;
-		min-width: 320px;
+		min-width: 300px;
 		height: 100%;
-		right: 320px;
+		right: 300px;
+		text-align: center;
 	}
 
 		.tile, .placeholder {
-			width: 140px;
-			height: 140px;
-			margin: 5px;
+			width: 165px;
+			height: 165px;
+			margin: 1%;
 		}
 
 		.sel > .body {
@@ -509,14 +520,13 @@
 		}
 
 	.sidebar {
-		width: 320px;
+		width: 300px;
 		height: 100%;
 		float: right;
-		box-shadow: inset 10px 0 15px #000000;
 	}
 
 		.sidebar-title {
-			font-size: 28px;
+			font-size: 24px;
 			line-height: 50px;
 			text-indent: 10px;
 		}
@@ -545,6 +555,18 @@
 			position: absolute;
 		}
 
+}
+
+@media all and (min-width: 860px) and (max-width: 1059px) {
+	.tile {
+		margin: 1%;
+	}
+}
+
+@media all and (min-width: 1060px) and (max-width: 1119px) {
+	.tile {
+		margin: 1%;
+	}
 }
 
 
@@ -604,19 +626,15 @@
 
 
 
-@media all and (min-width: 960px) {
+@media all and (min-width: 1120px) {
 	.container {
+		top: 0;
+		left: 0;
+		bottom: 0;
 		position: absolute;
-		left: 30px;
-		right: 450px;
-		bottom: 30px;
-		top: 30px;
-		border-radius: 10px;
-		box-shadow: inset 0 5px 10px rgba(94, 54, 34, 0.8);
+		right: 400px;
 		float: left;
-		max-width: 960px;
 		margin: auto;
-		overflow-x: hidden;
 	}
 
 		.tile, .placeholder {
@@ -634,10 +652,9 @@
 		}
 
 	.sidebar {
-		width: 420px;
+		width: 400px;
 		height: 100%;
 		float: right;
-		box-shadow: inset 10px 0 15px #000000;
 	}
 
 		.sidebar-title {
@@ -671,4 +688,4 @@
 		}
 }
 
-/* Variables:darkblue{370:377}.fonts{415:443,758:786,919:947,5821:5849,7322:7350}.white{388:395} */
+/* Variables:sprite{6033:6066,6146:6179}.darkblue{376:383}.fonts{421:449,760:788,6352:6380,7944:7972}.white{394:401} */
