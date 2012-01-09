@@ -93,11 +93,17 @@ var StickyApp = (function () {'use strict';
 			thisTile.startY = e.clientY - thisTile.tile.offsetTop;
 			thisTile.z = ++topZ;
 			if (!('mouseMoveHandler' in thisTile)) {
-				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
-				thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
+					thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
+					thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
+				}
 			}
-			document.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
-			document.addEventListener('mouseup', thisTile.mouseUpHandler, false);
+
+			if(window.Touch) {
+					
+			} else {
+				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
+				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
+			}
 		}
 	}
 
@@ -108,8 +114,8 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onMouseUp = function(e) {
-		document.removeEventListener('mousemove', this.mouseMoveHandler, false);
-		document.removeEventListener('mouseup', this.mouseUpHandler, false);
+		window.removeEventListener('mousemove', this.mouseMoveHandler, false);
+		window.removeEventListener('mouseup', this.mouseUpHandler, false);
 		saveTiles();
 	}
 
