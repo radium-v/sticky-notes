@@ -90,8 +90,8 @@ var StickyApp = (function () {'use strict';
 		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
 
 			var thisTile = getTile(captured);
-			thisTile.startX = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
-			thisTile.startY = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - thisTile.tile.offsetTop;
+			thisTile.startX = (e.touches ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
+			thisTile.startY = (e.touches ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetTop;
 			thisTile.z = ++topZ;
 			if (!('mouseMoveHandler' in thisTile)) {
 				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
@@ -112,9 +112,8 @@ var StickyApp = (function () {'use strict';
 	window.onMouseMove = function(e) {
 		var self = this;
 
-		self.left = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - self.startX;
-		self.top = (e.targetTouches ? e.targetTouches[0].clientY : e.clientY) - self.startY;
-		console.log(self.startX);
+		self.left = (e.touches ? e.touches[0].clientX : e.clientX) - self.startX;
+		self.top = (e.touches ? e.touches[0].clientY : e.clientY) - self.startY;
 	}
 
 	window.onMouseUp = function(e) {
