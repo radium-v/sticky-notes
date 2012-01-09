@@ -98,6 +98,7 @@ var StickyApp = (function () {'use strict';
 			}
 
 			if(window.Touch) {
+				e.preventDefault();
 				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
