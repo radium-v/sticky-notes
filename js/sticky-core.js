@@ -100,6 +100,7 @@ var StickyApp = (function () {'use strict';
 			if(window.Touch) {
 				e.preventDefault();
 				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
+				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
@@ -117,6 +118,7 @@ var StickyApp = (function () {'use strict';
 		window.removeEventListener('mousemove', this.mouseMoveHandler, false);
 		window.removeEventListener('touchmove', this.mouseMoveHandler, false);
 		window.removeEventListener('mouseup', this.mouseUpHandler, false);
+		window.removeEventListener('touchend', this.mouseUpHandler, false);
 		saveTiles();
 	}
 
