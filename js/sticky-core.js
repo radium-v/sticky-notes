@@ -93,9 +93,8 @@ var StickyApp = (function () {'use strict';
 			thisTile.startY = e.clientY - thisTile.tile.offsetTop;
 			thisTile.z = ++topZ;
 			if (!('mouseMoveHandler' in thisTile)) {
-					thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
-					thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
-				}
+				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
+				thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
 			}
 
 			if(window.Touch) {
