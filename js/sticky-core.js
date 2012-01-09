@@ -114,6 +114,7 @@ var StickyApp = (function () {'use strict';
 
 		self.left = (e.touches ? e.touches[0].clientX : e.clientX) - self.startX;
 		self.top = (e.touches ? e.touches[0].clientY : e.clientY) - self.startY;
+		console.log(self.left);
 	}
 
 	window.onMouseUp = function(e) {
