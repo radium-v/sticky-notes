@@ -100,8 +100,8 @@ var StickyApp = (function () {'use strict';
 
 			if(window.Touch) {
 				e.preventDefault();
-				window.addEventListener('touchmove', thisTile.mouseMoveHandler, true);
-				window.addEventListener('touchend', thisTile.mouseUpHandler, true);
+				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
+				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
@@ -112,9 +112,8 @@ var StickyApp = (function () {'use strict';
 	window.onMouseMove = function(e) {
 		var self = this;
 
-		self.left = ((e.touches) ? e.touches[0].clientX : e.clientX) - self.startX;
-		self.top = e.clientY - self.startY;
-		console.log(e.touches[0].clientX);
+		self.left = (e.touches ? e.touches[0].clientX : e.clientX) - self.startX;
+		self.top = (e.touches ? e.touches[0].clientY : e.clientY) - self.startY;
 	}
 
 	window.onMouseUp = function(e) {
