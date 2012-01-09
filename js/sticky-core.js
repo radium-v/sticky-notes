@@ -90,8 +90,8 @@ var StickyApp = (function () {'use strict';
 		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
 
 			var thisTile = getTile(captured);
-			thisTile.startX = e.clientX - thisTile.tile.offsetLeft;
-			thisTile.startY = e.clientY - thisTile.tile.offsetTop;
+			thisTile.startX = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
+			thisTile.startY = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - thisTile.tile.offsetTop;
 			thisTile.z = ++topZ;
 			if (!('mouseMoveHandler' in thisTile)) {
 				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
