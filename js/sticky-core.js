@@ -98,7 +98,7 @@ var StickyApp = (function () {'use strict';
 			}
 
 			if(window.Touch) {
-					
+				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
@@ -114,6 +114,7 @@ var StickyApp = (function () {'use strict';
 
 	window.onMouseUp = function(e) {
 		window.removeEventListener('mousemove', this.mouseMoveHandler, false);
+		window.removeEventListener('touchmove', this.mouseMoveHandler, false);
 		window.removeEventListener('mouseup', this.mouseUpHandler, false);
 		saveTiles();
 	}
