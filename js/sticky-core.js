@@ -112,8 +112,8 @@ var StickyApp = (function () {'use strict';
 	window.onMouseMove = function(e) {
 		var self = this;
 
-		self.left = (e.touches ? e.touches[0].clientX : e.clientX) - self.startX;
-		self.top = (e.touches ? e.touches[0].clientY : e.clientY) - self.startY;
+		self.left = (e.targetTouches ? e.targetTouches[0].clientX : e.clientX) - self.startX;
+		self.top = (e.targetTouches ? e.targetTouches[0].clientY : e.clientY) - self.startY;
 		console.log(self.left);
 	}
 
