@@ -3,7 +3,7 @@ var StickyApp = (function () {'use strict';
 	//Constants
 	var DEFAULT_TEXT = 'Hello, world! This is a note.';
 	var DEFAULT_TITLE = 'Untitled Note';
-	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-left corner to create a new note.';
+	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.';
 	var selectedTile, captured, topZ, ordering, tiles, workspace, sidebar, toggleView, newnote, derp, selTile;
 
 	topZ = 0;
@@ -94,8 +94,7 @@ var StickyApp = (function () {'use strict';
 			this._position = x;
 		},
 		get zIndex () { 
-			this._zIndex = x;
-			return this.tile.style.zIndex;
+			return this._zIndex;
 		},
 		set zIndex (x) { 
 			this.tile.style.zIndex = x; 
@@ -131,6 +130,19 @@ var StickyApp = (function () {'use strict';
 
 	}
 
+	function saveTiles() {
+		var str;
+		var d = "_µµ_";
+		for(var i = 0; i < tiles.length; i++) {
+
+			str = tiles[i].id + d + tiles[i].title + d + tiles[i].text + d + tiles[i].left + d + tiles[i].top + d + tiles[i].zIndex;
+
+			localStorage.setItem('tile_' + i, str);
+			console.log(localStorage.getItem('tile_' + i));
+		}
+
+	}
+
 	function selectTile(el) {
 
 		if(el.className.indexOf('tile') > -1) {
@@ -160,6 +172,7 @@ var StickyApp = (function () {'use strict';
 
 		document.getElementById('title').value = 'Sticky Notes';
 		document.getElementById('note_text').value = DEFAULT_STARTER_TEXT;
+		saveTiles();
 	}
 
 	function onClick(e) {
