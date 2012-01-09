@@ -279,7 +279,7 @@ var StickyApp = (function () {'use strict';
 
 	function init() {
 		workspace = document.getElementById('stickies');
-		window.addEventListener('click', function (e) { return onClick(e) }, true);
+		window.addEventListener('click', function (e) { return window.onClick(e) }, true);
 		window.addEventListener('mousedown', function (e) { return window.onMouseDown(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
@@ -308,7 +308,8 @@ var StickyApp = (function () {'use strict';
 
 		if (window.Touch) {
 			console.log('touch enabled!');
-			window.addEventListener('touchstart', function(e) { return onMouseDown(e) }, true);
+			window.addEventListener('touchend', function(e) { return window.onClick(e) }, true);
+			window.addEventListener('touchstart', function(e) { return window.onMouseDown(e) }, true);
 		}
 		setPosition();
 		deselectTile();
