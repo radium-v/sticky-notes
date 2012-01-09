@@ -99,8 +99,8 @@ var StickyApp = (function () {'use strict';
 
 			if(window.Touch) {
 				e.preventDefault();
-				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
-				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
+				window.addEventListener('touchmove', thisTile.mouseMoveHandler, true);
+				window.addEventListener('touchend', thisTile.mouseUpHandler, true);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
