@@ -88,12 +88,6 @@ var StickyApp = (function () {'use strict';
 	window.onMouseDown = function(e) {
 		captured = e.target.parentNode;
 		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
-			
-			if(e.originalEvent.touches && e.originalEvent.touches.length) {
-				e = e.originalEvent.touches[0];
-			} else if(e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
-				e = e.originalEvent.changedTouches[0];
-			}
 
 			var thisTile = getTile(captured);
 			thisTile.startX = e.clientX - thisTile.tile.offsetLeft;
@@ -117,6 +111,12 @@ var StickyApp = (function () {'use strict';
 
 	window.onMouseMove = function(e) {
 		var self = this;
+
+		if(e.originalEvent.touches && e.originalEvent.touches.length) {
+			e = e.originalEvent.touches[0];
+		} else if(e.originalEvent.changedTouches && e.originalEvent.changedTouches.length) {
+			e = e.originalEvent.changedTouches[0];
+		}
 
 		self.left = e.clientX - self.startX;
 		self.top = e.clientY - self.startY;
