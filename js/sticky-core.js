@@ -1,10 +1,12 @@
 var StickyApp = (function () {'use strict';
 
 	//Constants
+	var DEFAULT_APP_TITLE = 'Sticky Notes';
 	var DEFAULT_TEXT = 'Hello, world! This is a note.';
 	var DEFAULT_TITLE = 'Untitled Note';
+	var STR_DELIMITER = '_µµ_';
 	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.';
-	var selectedTile, captured, topZ, ordering, tiles, workspace, sidebar, toggleView, newnote, derp, selTile;
+	var selectedTile, captured, topZ, ordering, tiles, workspace, sidebar, toggleView;
 
 	topZ = 0;
 	ordering = [
@@ -13,43 +15,54 @@ var StickyApp = (function () {'use strict';
 	];
 	tiles = [];
 
-	function Tile(tileType) {
+	function Tile(args) {
 		var self = this;
 		if (self instanceof Tile) {
+
 			self.tile = document.createElement('li');
 			self.tileBody = document.createElement('pre');
 			self.closeButton = document.createElement('div');
 			self.handle = document.createElement('div');
 			self.tile.className = 'tile';
-			self.tileBody.className = 'body ' + tileType;
+			self.tileBody.className = 'body note';
 			self.closeButton.className = 'btn-close';
-			self.closeButton.innerHTML = '&#10005;';
-			self.handle.className = 'handle';
-			self.id = (Math.uuid(8));
-			self.title = DEFAULT_TITLE;
-			self.text = DEFAULT_TEXT;
-			self.tile.id = self.id;
+
+			if(args) {
+				self.id = args['id'];
+				self.title = args['title'];
+				self.text = args['text'];
+				self.left = args['left'];
+				self.top = args['top'];
+				self.zIndex = ++topZ;
+			} else {
+				self.id = (Math.uuid(8));
+				self.title = DEFAULT_TITLE;
+				self.text = DEFAULT_TEXT;
+				self.left = Math.round((Math.random() * (window.innerWidth / 2)));
+				self.top = Math.round((Math.random() * (window.innerHeight / 2)));
+			}
+			
 			self.tile.appendChild(self.tileBody);
 			self.tile.appendChild(self.closeButton);
 			self.tile.appendChild(self.handle);
-			self.zIndex = ++topZ;
 			if (!('mouseDownHandler' in self)) {
 				self.mouseDownHandler = function(e) { return self.onMouseDown(e) };
 			}
 			var mouseDownHandler
 			self.tile.addEventListener('mousedown', self.mouseDownHandler, false);
-			self.left = Math.round((Math.random() * (window.innerWidth / 2)));
-			self.top = Math.round((Math.random() * (window.innerHeight / 2)));
 			self.tile.style.position = 'absolute';
 			return self;
 		} else {
-			return new Tile();
+			return new Tile(arguments);
 		}
 	}
 
 	Tile.prototype = {
 		get id() { return this._id; },
-		set id(x) { this._id = x; },
+		set id(x) {
+			this.tile.id = x;
+			this._id = x;
+		},
 		get title() { return this._title;},
 		set title(x) { this._title = x; },
 		get text() { return this._text; },
@@ -68,22 +81,6 @@ var StickyApp = (function () {'use strict';
 			var val = x + 'px';
 			this.tile.style.top = val;
 			this._top = x;
-		},
-		get width () {
-			this._width = this.tile.scrollWidth;
-			return this._width;
-		},
-		set width (x) {
-			this.tile.style.width = x + 'px';
-			this._width = x;
-		},
-		get height () {
-			this._height = this.tile.scrollHeight;
-			return this._height;
-		},
-		set height (x) {
-			this.tile.style.height = x + 'px';
-			this._height = x + 'px';
 		},
 		get position() {
 			this._position = this.tile.style.position;
@@ -126,39 +123,42 @@ var StickyApp = (function () {'use strict';
 			captured = e.target.parentNode;
 			document.removeEventListener('mousemove', this.mouseMoveHandler, false);
 			document.removeEventListener('mouseup', this.mouseUpHandler, false);
+			saveTiles();
 		}
 
 	}
 
 	function saveTiles() {
 		var str;
-		var d = "_µµ_";
+		localStorage.clear();
 		for(var i = 0; i < tiles.length; i++) {
-
-			str = tiles[i].id + d + tiles[i].title + d + tiles[i].text + d + tiles[i].left + d + tiles[i].top + d + tiles[i].zIndex;
-
-			localStorage.setItem('tile_' + i, str);
-			console.log(localStorage.getItem('tile_' + i));
+			str = {
+				'id' : tiles[i].id,
+				'title' : tiles[i].title,
+				'text' : tiles[i].text,
+				'left' : tiles[i].left,
+				'top' : tiles[i].top,
+				'zIndex' : tiles[i].zIndex
+			};
+			localStorage.setItem('ordering', JSON.stringify(ordering));
+			localStorage.setItem('tile_' + i, JSON.stringify(str));
 		}
-
 	}
 
 	function selectTile(el) {
 
 		if(el.className.indexOf('tile') > -1) {
-			var thisTile = getTile(el);
+			selectedTile = getTile(el);
 			deselectTile();
 			var txtSidebarText = document.getElementById('note_text');
-			txtSidebarText.value = thisTile.text;
+			txtSidebarText.value = selectedTile.text;
 			var txtSidebarTitle = document.getElementById('title');
-			txtSidebarTitle.value = thisTile.title;
-			if(thisTile.tile.className.indexOf('sel') === -1) {
-				thisTile.tile.className += ' sel';
-				thisTile.zIndex = topZ++;
+			txtSidebarTitle.value = selectedTile.title;
+			if(selectedTile.tile.className.indexOf('sel') === -1) {
+				selectedTile.tile.className += ' sel';
+				selectedTile.zIndex = topZ++;
 			}
-
 			txtSidebarText.focus();
-			return thisTile;
 		}
 	}
 
@@ -170,26 +170,38 @@ var StickyApp = (function () {'use strict';
 			s[i].className = str.substring(0, str.indexOf('sel')) + str.substring(str.indexOf('sel') + 3);
 		}
 
-		document.getElementById('title').value = 'Sticky Notes';
+		document.getElementById('title').value = DEFAULT_APP_TITLE;
 		document.getElementById('note_text').value = DEFAULT_STARTER_TEXT;
-		saveTiles();
 	}
 
 	function onClick(e) {
 		captured = e.target;
 		if (captured.className.indexOf('body') > -1) {
-			selectedTile = selectTile(captured.parentNode);
-		} else if (captured.id === 'view') {
-			changeOrder();
-			captured.className = ordering[1][0];
-		} else if (captured.className === 'btn-close') {
-			removeTile(captured.parentNode);
-		} else if (captured.id === 'new_note') {
-			var newTile = addNewTile('note');
-			selectedTile = selectTile(newTile.tile);
+			selectTile(captured.parentNode);
+		}
+
+		if (captured.id === 'view') {
+			ordering.push(ordering.shift());
 			setPosition();
-		} else if (captured.id === 'note_save') {
-		} else if (captured.id === 'container') {
+			captured.className = ordering[1][0];
+			saveTiles();
+		}
+
+		if (captured.className === 'btn-close') {
+			removeTile(captured.parentNode);
+			saveTiles();
+		}
+		
+		if (captured.id === 'new_note') {
+			addNewTile();
+			saveTiles();
+		}
+		
+		if (captured.id === 'note_save') {
+			saveTiles();
+		}
+
+		if (captured.id === 'container') {
 			deselectTile();
 		}
 	}
@@ -198,8 +210,15 @@ var StickyApp = (function () {'use strict';
 		captured = e.target;
 		var k = e.keyCode;
 		if (captured.id === 'note_text') {
+			console.log(k);
 			switch (k) {
-				
+				case 9:
+					e.preventDefault();
+					if (e.shiftKey) {
+						(selectedTile.tile.previousSibling) ? selectTile(selectedTile.tile.previousSibling) : selectTile(tiles[tiles.length - 1].tile);
+					} else {
+						(selectedTile.tile.nextSibling) ? selectTile(selectedTile.tile.nextSibling) : selectTile(tiles[0].tile);
+					}
 			}
 			selectedTile.text = captured.value;
 		}
@@ -209,9 +228,11 @@ var StickyApp = (function () {'use strict';
 		}
 	}
 
-	function addNewTile (tileType) {
-		tiles.push(new Tile(tileType));
+	function addNewTile (options) {
+		tiles.push(new Tile(options));
+		selectTile(tiles[tiles.length - 1].tile);
 		workspace.appendChild(tiles[tiles.length - 1].tile);
+		setPosition();
 		return tiles[tiles.length - 1];
 	}
 
@@ -224,16 +245,7 @@ var StickyApp = (function () {'use strict';
 					tiles.splice(i, 1);
 				}
 			}
-		}
-	}
-
-	function changeOrder() {
-		ordering.push(ordering.shift());
-		setPosition();
-		if (ordering[0][0] === 'sorted') {
-			$(workspace).sortable('enable');
-		} else {
-			$(workspace).sortable('disable');
+			saveTiles();
 		}
 	}
 
@@ -243,19 +255,37 @@ var StickyApp = (function () {'use strict';
 			if (ordering[0][0] === 'sorted') {
 				tiles[i].tile.style.left = 'inherit';
 				tiles[i].tile.style.top = 'inherit';
+				$(workspace).sortable('enable');
 			} else {
 				tiles[i].left = tiles[i].left;
 				tiles[i].top = tiles[i].top;
+				$(workspace).sortable('disable');
 			}
-		}		
+		}
 	}
 
 	function getTile(el) {
-		for (var i = 0; i < tiles.length; i++) {
+		for (var i in tiles) {
 			if (el === tiles[i].tile) {
 				return tiles[i];
 			}
 		}
+	}
+
+	function sortTiles(e, ui) {
+		var arr = $(workspace).sortable('toArray');
+		var dummy = new Array();
+		for(var i = 0; i < arr.length; i++) {
+			for(var j = 0; j < tiles.length; j++) {
+				if (tiles[j].tile.id === arr[i]) {
+					dummy.push(tiles[j]);
+				}
+			}
+		}
+
+		tiles = dummy;
+		saveTiles();
+
 	}
 
 	function init() {
@@ -263,13 +293,29 @@ var StickyApp = (function () {'use strict';
 		window.addEventListener('click', function (e) { return onClick(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
-		sidebar.addEventListener('keyup', function (e) { return onKey(e) }, false);
-		changeOrder(ordering);
-		$(workspace).sortable({'items': '.tile', 'placeholder': 'placeholder', 'revert': '140ms', 'tolerance': 'pointer', 'zIndex': '2000'}).sortable('disable');
+		sidebar.addEventListener('keydown', function (e) { return onKey(e) }, false);
+		$(workspace).sortable({
+			'items': '.tile',
+			'placeholder': 'placeholder',
+			'revert': '140ms',
+			'tolerance': 'pointer',
+			'zIndex': '2000',
+			stop : function(e, ui) { return sortTiles.apply(this, arguments); } }).sortable('disable');
 		toggleView = document.getElementById('view');
 		toggleView.addEventListener('click', function(e) {return onClick(e) }, false);
 
-		changeOrder();
+		if (localStorage) {
+			for(var i = 0; i < localStorage.length; i++) {
+				if ('tile_' + i in localStorage) {
+					addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
+				}
+			}
+			if ('ordering' in localStorage) {
+				ordering = JSON.parse(localStorage.getItem('ordering'));
+			}
+		}
+		setPosition();
+		deselectTile();
 	}
 
 	init();

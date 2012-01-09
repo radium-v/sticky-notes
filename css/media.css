@@ -197,7 +197,7 @@
 			-webkit-user-select: none;
 			height: 98%;
 			width: 98%;
-			opacity: 0.7;
+			opacity: 0.4;
 			display: block;
 			cursor: pointer;
 			overflow: hidden;
@@ -209,30 +209,26 @@
 				z-index: 1000 !important;
 			}
 
-			.tile:hover > .body, .sel > .body {
+			.tile:not(.sel):hover > .body {
+				-webkit-animation: focus 0.14s linear forwards;
+				opacity: 0.9;
+			}
+
+			.sel > .body {
 				-webkit-animation: focus 0.14s linear forwards;
 				opacity: 1;
 			}
 
 			.body ~ .btn-close {
-				-webkit-transform: scale(0.8);
-				background-color: #000000;
-				border-radius: 100%;
-				border: 2px solid #FFFFFF;
-				box-shadow: 0 4px 10px #000000;
-				color: #FFFFFF;
+				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAAA3NCSVQICAjb4U/gAAAAwFBMVEX///8FBggAAAD///8AAAAABQUAAAAAAAAAAAP39/f8/PwICAjv7+/AwsIAAADm5ub////8/Pz39/f8/Pzy8/O2trZBQUHW19ejo6Ofn5+DhYZxcXFJSUkaGhqOjo6lpaSfn5/MzMx+gojR0dGjo6Pv7+/q6ur8/Pzf39/y8/Pv7+/////y8/Pq6urj4+Pf39/MzMyvr6+pqamOjo6KiopsbG5paWlfYWNdXV1SVFY5OTkvLy+ZmZmIhoafn5+Ojo4Saz3wAAAAQHRSTlMA/xH/Iv8zRP///////1XM3d3d7v////////////8iM0R3d4iZu7vMzN3d7u7///////////////////8iIjMzveoCvAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAWNJREFUKJFd0Il2gjAQBVDJEDZFFsEFtcrqrljr2u3//6ozCVjadzhKcs9zTFqtKrO4cDcbt4hnrb/5SF0A6Ozww00/mzLPwQrPCuZ2NKGYN2QBZV+pMjnA4mkvOYRt5Zn2EPKXilIoG4I5Qirl2zMfuL5fafc9mmJv530JiuFIIwCGitLvQIiLN4hJWAE3XPVNNBR4pa6VMyLPFAPGaPjYYuzBQ2Kst5fDxxbUopQ9xlpMrWkSgJjH8d3uqUR+IAXnYG9kcG4YA19QAfTfpyg2zTtxzpWgEJTBiS6P5vCzCTbWLpAJSvzOlM5yaivcuI8eSKWfCNIycRaKwXGf8whSjYipXQciSVzkajlYooOpWrKGkSQDW5G5TqhEZ0ZzYI/3Sj93GYBDwsQlqprezbZgHsJwEMA2TXRZkjVdT7LlyrJWyyzR9bokDVHvYvBL+xVhEiU0hEwghaAhNVL+Q4Uiz40fPIYbqZLRr9gAAAAASUVORK5CYII=) 0 0 no-repeat transparent;
 				cursor: pointer;
 				display: block;
-				font-size: 18px;
-				height: 20px;
-				line-height: 24px;
+				height: 27px;
 				opacity: 0;
-				padding: 1px 5px 5px 1px;
 				position: absolute;
-				right: -15px;
-				text-indent: 5px;
-				top: -15px;
-				width: 20px;
+				left: -15px;
+				top: -10px;
+				width: 26px;
 				z-index: 4;
 				-webkit-transition: opacity 0.14s linear;
 			}
@@ -691,4 +687,4 @@
 		}
 }
 
-/* Variables:sprite{6408:6441,6521:6554}.darkblue{793:800}.fonts{838:866,1125:1153,6727:6755,8920:8948}.white{811:818} */
+/* Variables:sprite{6408:6441,6521:6554}.darkblue{793:800}.fonts{838:866,1125:1153,6727:6755,9834:9862}.white{811:818} */
