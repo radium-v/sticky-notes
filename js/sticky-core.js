@@ -206,7 +206,19 @@ var StickyApp = (function () {'use strict';
 		}
 	}
 
-	function onKey(e) {
+	function onKeyUp(e) {
+		captured = e.target;
+		var k = e.keyCode;
+		if (captured.id === 'note_text') {
+			selectedTile.text = captured.value;
+		}
+
+		if (captured.id === 'title') {
+			selectedTile.title = captured.value;
+		}
+	}
+
+	function onKeyDown(e) {
 		captured = e.target;
 		var k = e.keyCode;
 		if (captured.id === 'note_text') {
@@ -220,11 +232,6 @@ var StickyApp = (function () {'use strict';
 						(selectedTile.tile.nextSibling) ? selectTile(selectedTile.tile.nextSibling) : selectTile(tiles[0].tile);
 					}
 			}
-			selectedTile.text = captured.value;
-		}
-
-		if (captured.id === 'title') {
-			selectedTile.title = captured.value;
 		}
 	}
 
@@ -293,7 +300,8 @@ var StickyApp = (function () {'use strict';
 		window.addEventListener('click', function (e) { return onClick(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
-		sidebar.addEventListener('keydown', function (e) { return onKey(e) }, false);
+		sidebar.addEventListener('keyup', function (e) { return onKeyUp(e) }, false);
+		sidebar.addEventListener('keydown', function (e) { return onKeyDown(e) }, false);
 		$(workspace).sortable({
 			'items': '.tile',
 			'placeholder': 'placeholder',
