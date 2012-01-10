@@ -117,7 +117,7 @@ var StickyApp = (function () {'use strict';
 
 	window.onMouseUp = function(e) {
 		window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
-		window.removeEventListener((isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
+		window.removeEventListener(isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
 		saveTiles();
 	}
 
