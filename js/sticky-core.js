@@ -86,7 +86,7 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onMouseDown = function(e) {
-		captured = e.target.parentNode;
+		captured = isTouchEnabled ? e.touches[0].target.parentNode : e.target.parentNode;
 		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
 
 			var thisTile = getTile(captured);
@@ -168,7 +168,7 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onClick = function(e) {
-		captured = e.target;
+		captured = isTouchEnabled ? e.touches[0].target : e.target;
 		if (captured.className.indexOf('body') > -1) {
 			selectTile(captured.parentNode);
 		}
@@ -200,7 +200,7 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onKeyUp = function(e) {
-		captured = e.target;
+		captured = isTouchEnabled ? e.touches[0].target : e.target;
 		var k = e.keyCode;
 		if (captured.id === 'note_text') {
 			selectedTile.text = captured.value;
@@ -212,7 +212,7 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onKeyDown = function(e) {
-		captured = e.target;
+		captured = isTouchEnabled ? e.touches[0].target : e.target;
 		var k = e.keyCode;
 		if (captured.id === 'note_text') {
 			switch (k) {
