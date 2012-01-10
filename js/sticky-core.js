@@ -90,8 +90,8 @@ var StickyApp = (function () {'use strict';
 		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
 
 			var thisTile = getTile(captured);
-			thisTile.startX = (e.touches ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
-			thisTile.startY = (e.touches ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetTop;
+			thisTile.startX = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
+			thisTile.startY = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - thisTile.tile.offsetTop;
 			thisTile.z = ++topZ;
 			if (!('mouseMoveHandler' in thisTile)) {
 				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
@@ -111,9 +111,8 @@ var StickyApp = (function () {'use strict';
 
 	window.onMouseMove = function(e) {
 		var self = this;
-
-		self.left = (e.touches ? e.touches[0].clientX : e.clientX) - self.startX;
-		self.top = (e.touches ? e.touches[0].clientY : e.clientY) - self.startY;
+		self.left = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - self.startX;
+		self.top = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - self.startY;
 	}
 
 	window.onMouseUp = function(e) {
@@ -290,12 +289,11 @@ var StickyApp = (function () {'use strict';
 
 	function init() {
 		isTouchEnabled = window.Touch || false;
-		console.log(isTouchEnabled);
 
 		workspace = document.getElementById('workspace');
 
 		window.addEventListener('click', function (e) { return window.onClick(e) }, true);
-		window.addEventListener((isTouchEnabled) ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
+		window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
 		sidebar.addEventListener('keyup', function (e) { return window.onKeyUp(e) }, false);
@@ -307,8 +305,6 @@ var StickyApp = (function () {'use strict';
 			'tolerance': 'pointer',
 			'zIndex': '2000',
 			stop : function(e, ui) { return sortTiles.apply(this, arguments); } }).sortable('disable');
-		toggleView = document.getElementById('view');
-		toggleView.addEventListener('click', function(e) {return onClick(e) }, false);
 
 		if (localStorage) {
 			for(var i = 0; i < localStorage.length; i++) {
