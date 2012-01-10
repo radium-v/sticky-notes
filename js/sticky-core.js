@@ -111,6 +111,7 @@ var StickyApp = (function () {'use strict';
 
 	window.onMouseMove = function(e) {
 		var self = this;
+		e.preventDefault();
 		self.left = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - self.startX;
 		self.top = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - self.startY;
 	}
