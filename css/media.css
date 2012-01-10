@@ -12,8 +12,6 @@
 
 */
 
-@import url(http://fonts.googleapis.com/css?family=Short+Stack);
-
 @media all {
 
 	body {
@@ -32,10 +30,6 @@
 		z-index: 1;
 	}
 
-		.workspace {
-			
-		}
-
 		.sidebar {
 			position: relative;
 		}
@@ -47,8 +41,11 @@
 				font: Helvetica, Arial, sans-serif;
 				font-weight: 300;
 				display: block;
-				outline: none;
 				text-overflow: ellipsis;
+			}
+
+			.sidebar-title:focus {
+				outline: none;
 			}
 
 			.side-panel {
@@ -675,4 +672,4 @@
 		}
 }
 
-/* Variables:sprite{6522:6555,6635:6668}.darkblue{859:866}.fonts{904:932,1239:1267,7886:7914}.white{877:884} */
+/* Variables:sprite{6464:6497,6577:6610}.darkblue{793:800}.fonts{838:866,1149:1177,7828:7856}.white{811:818} */
