@@ -290,7 +290,7 @@ var StickyApp = (function () {'use strict';
 
 		workspace = document.getElementById('workspace');
 
-		window.addEventListener(isTouchEnabled ? 'tap' : 'click', function (e) { return window.onClick(e) }, true);
+		window.addEventListener(isTouchEnabled ? 'touchend' : 'click', function (e) { return window.onClick(e) }, false);
 		window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
