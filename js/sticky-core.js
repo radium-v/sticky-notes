@@ -98,13 +98,13 @@ var StickyApp = (function () {'use strict';
 				thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
 			}
 
-			if(window.Touch) {
+			if(!window.Touch) {
 				e.preventDefault();
-				window.addEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', thisTile.mouseMoveHandler, false);
-				window.addEventListener(isTouchEnabled ? 'touchend' : 'mouseup', thisTile.mouseUpHandler, false);
-			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
+			} else {
+				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
+				window.addEventListener('touchmove', thisTile.mouseUpHandler, false);
 			}
 		}
 	}
@@ -116,10 +116,8 @@ var StickyApp = (function () {'use strict';
 	}
 
 	window.onMouseUp = function(e) {
-		window.removeEventListener('mousemove', this.mouseMoveHandler, false);
-		window.removeEventListener('touchmove', this.mouseMoveHandler, false);
-		window.removeEventListener('mouseup', this.mouseUpHandler, false);
-		window.removeEventListener('touchend', this.mouseUpHandler, false);
+		window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
+		window.removeEventListener((isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
 		saveTiles();
 	}
 
@@ -292,7 +290,7 @@ var StickyApp = (function () {'use strict';
 
 		workspace = document.getElementById('workspace');
 
-		window.addEventListener('click', function (e) { return window.onClick(e) }, true);
+		window.addEventListener(isTouchEnabled ? 'touchtap' : 'click', function (e) { return window.onClick(e) }, true);
 		window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
