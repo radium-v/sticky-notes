@@ -6,7 +6,7 @@ var StickyApp = (function () {'use strict';
 	var Tile = function (args) {
 		var self = this;
 		if (self instanceof Tile) {
-			self.tile = document.createElement('li');
+			self.tile = document.createElement('div');
 			self.tile.className = 'tile';
 			self.tileBody = document.createElement('pre');
 			self.tileBody.className = 'body note';
@@ -177,7 +177,7 @@ var StickyApp = (function () {'use strict';
 		if (captured.id === 'view') {
 			ordering.push(ordering.shift());
 			setPosition();
-			captured.className = ordering[1][0];
+			captured.className = 'view ' + ordering[1][0];
 			saveTiles();
 		}
 
