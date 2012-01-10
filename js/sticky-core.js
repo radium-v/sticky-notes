@@ -1,7 +1,7 @@
 var StickyApp = (function () {'use strict';
 
 	//Constants
-	var DEFAULT_APP_TITLE = 'Sticky Notes', DEFAULT_TEXT = 'Hello, world! This is a note.', DEFAULT_TITLE = 'Untitled Note', DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.', selectedTile, captured, topZ = 0, ordering = [['sorted', 'relative'], ['free', 'absolute']], tiles = [], workspace, sidebar, toggleView;
+	var DEFAULT_APP_TITLE = 'Sticky Notes', DEFAULT_TEXT = 'Hello, world! This is a note.', DEFAULT_TITLE = 'Untitled Note', DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.', selectedTile, captured, topZ = 0, ordering = [['sorted', 'relative'], ['free', 'absolute']], tiles = [], workspace, sidebar, toggleView, isTouchEnabled;
 
 	var Tile = function (args) {
 		var self = this;
@@ -100,8 +100,8 @@ var StickyApp = (function () {'use strict';
 
 			if(window.Touch) {
 				e.preventDefault();
-				window.addEventListener('touchmove', thisTile.mouseMoveHandler, false);
-				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
+				window.addEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', thisTile.mouseMoveHandler, false);
+				window.addEventListener(isTouchEnabled ? 'touchend' : 'mouseup', thisTile.mouseUpHandler, false);
 			} else {
 				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
 				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
@@ -289,9 +289,13 @@ var StickyApp = (function () {'use strict';
 	}
 
 	function init() {
-		workspace = document.getElementById('stickies');
+		isTouchEnabled = window.Touch || false;
+		console.log(isTouchEnabled);
+
+		workspace = document.getElementById('workspace');
+
 		window.addEventListener('click', function (e) { return window.onClick(e) }, true);
-		window.addEventListener('mousedown', function (e) { return window.onMouseDown(e) }, true);
+		window.addEventListener((isTouchEnabled) ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
 
 		sidebar = document.getElementById('sidebar');
 		sidebar.addEventListener('keyup', function (e) { return window.onKeyUp(e) }, false);
@@ -317,11 +321,6 @@ var StickyApp = (function () {'use strict';
 			}
 		}
 
-		if (window.Touch) {
-			console.log('touch enabled!');
-			window.addEventListener('touchend', function(e) { return window.onClick(e) }, true);
-			window.addEventListener('touchstart', function(e) { return window.onMouseDown(e) }, true);
-		}
 		setPosition();
 		deselectTile();
 	}

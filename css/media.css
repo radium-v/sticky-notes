@@ -167,7 +167,7 @@
 					background: url(../img/sprites.png) no-repeat no-repeat -10px -174px transparent;
 				}
 	
-	#stickies {
+	#workspace {
 		margin-top: 30px;
 		width: 100%;
 	}
@@ -687,4 +687,4 @@
 		}
 }
 
-/* Variables:sprite{6408:6441,6521:6554}.darkblue{793:800}.fonts{838:866,1125:1153,6727:6755,9834:9862}.white{811:818} */
+/* Variables:sprite{6408:6441,6521:6554}.darkblue{793:800}.fonts{838:866,1125:1153,6728:6756,9835:9863}.white{811:818} */
