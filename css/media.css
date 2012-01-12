@@ -149,6 +149,7 @@
 		color: #565667;
 		display: inline-block;
 		position: relative;
+		text-align: left;
 		vertical-align: top;
 		z-index: 2;
 	}
@@ -324,7 +325,6 @@
 	.tile, .placeholder {
 		height: 160px;
 		width: 160px;
-		text-align: left;
 	}
 
 	.sel {
