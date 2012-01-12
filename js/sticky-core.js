@@ -1,34 +1,47 @@
 var StickyApp = (function () {'use strict';
 
 	//Constants
-	var DEFAULT_APP_TITLE = 'Sticky Notes', DEFAULT_TEXT = 'Hello, world! This is a note.', DEFAULT_TITLE = 'Untitled Note', DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.', selectedTile, captured, topZ = 0, ordering = [['sorted', 'relative'], ['free', 'absolute']], tiles = [], workspace, sidebar, toggleView, isTouchEnabled;
+	var DEFAULT_APP_TITLE = 'Sticky Notes';
+	var DEFAULT_TEXT = 'Hello, world! This is a note.'
+	var DEFAULT_TITLE = 'Untitled Note';
+	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.';
+	var selectedTile, 
+		captured,
+		topZ = 0,
+		ordering = [['sorted', 'relative'], ['free', 'absolute']],
+		tiles = [],
+		workspace,
+		sidebar,
+		toggleView,
+		isTouchEnabled;
 
 	var Tile = function (args) {
 		var self = this;
-		if (self instanceof Tile) {
+		if (this instanceof Tile) {
 			self.tile = document.createElement('div');
-			self.tile.className = 'tile';
 			self.tileBody = document.createElement('pre');
-			self.tileBody.className = 'body note';
 			self.closeButton = document.createElement('div');
+			self.tileBody.className = 'note';
 			self.closeButton.className = 'btn-close';
-			if (args){
+			self.tile.appendChild(self.tileBody);
+			self.tile.appendChild(self.closeButton);
+			self.tile.className = 'tile';
+			self.position = 'absolute';
+			if (args) {
 				self.id = args.id;
-				self.title = args.title;
-				self.text = args.text;
 				self.left = args.left;
+				self.text = args.text;
+				self.title = args.title;
 				self.top = args.top;
 				self.z = ++topZ;
 			} else {
 				self.id = (Math.uuid(8));
-				self.title = DEFAULT_TITLE;
-				self.text = DEFAULT_TEXT;
 				self.left = Math.round((Math.random() * (window.innerWidth / 2)));
+				self.text = DEFAULT_TEXT;
+				self.title = DEFAULT_TITLE;
 				self.top = Math.round((Math.random() * (window.innerHeight / 2)));
 			}
-			self.tile.appendChild(self.tileBody);
-			self.tile.appendChild(self.closeButton);
-			self.tile.style.position = 'absolute';
+			self.tilt = 15;
 			return self;
 		} else {
 			return new Tile(arguments);
@@ -54,6 +67,17 @@ var StickyApp = (function () {'use strict';
 			this.tile.style.left = val;
 			this._left = x;
 		},
+
+		get tilt() {
+			return this._tilt;
+		},
+
+		set tilt(x) {
+			this._tilt = Math.floor(Math.random() * x);
+			this._tilt = (Math.floor(Math.random() * 2) === 1) ? -this._tilt : this._tilt;
+			this.tile.style.webkitTransform = 'rotate(' + this._tilt + 'deg)';
+		},
+
 		get top () {
 			return this._top;
 		},
@@ -63,21 +87,15 @@ var StickyApp = (function () {'use strict';
 			this.tile.style.top = val;
 			this._top = x;
 		},
-
 		get position() {
 			this._position = this.tile.style.position;
 			return this._position;
 		},
-
 		set position(x) {
 			this.tile.style.position = x;
 			this._position = x;
 		},
-
-		get z () { 
-			return this._z;
-		},
-
+		get z () { return this._z; },
 		set z (x) { 
 			this.tile.style.zIndex = x; 
 			this._z = x;
@@ -128,9 +146,10 @@ var StickyApp = (function () {'use strict';
 		for(var i = 0; i < tiles.length; i++) {
 			str = {
 				'id' : tiles[i].id,
-				'title' : tiles[i].title,
-				'text' : tiles[i].text,
 				'left' : tiles[i].left,
+				'text' : tiles[i].text,
+				'tilt' : tiles[i].tilt,
+				'title' : tiles[i].title,
 				'top' : tiles[i].top,
 				'z' : tiles[i].z
 			};
@@ -170,7 +189,7 @@ var StickyApp = (function () {'use strict';
 
 	window.onClick = function(e) {
 		captured = isTouchEnabled ? e.touches[0].target : e.target;
-		if (captured.className.indexOf('body') > -1) {
+		if (captured.className.indexOf('note') > -1) {
 			selectTile(captured.parentNode);
 		}
 
@@ -265,8 +284,8 @@ var StickyApp = (function () {'use strict';
 	}
 
 	function getTile(el) {
-		for (var i in tiles) {
-			if (el === tiles[i].tile) {
+		for (var i = 0; i < tiles.length; i++) {
+			if (tiles[i].tile.id === el.id) {
 				return tiles[i];
 			}
 		}
@@ -283,7 +302,6 @@ var StickyApp = (function () {'use strict';
 		}
 		tiles = dummy;
 		saveTiles();
-
 	}
 
 	function init() {

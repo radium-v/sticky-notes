@@ -3,17 +3,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Stickies</title>
-	<link href='http://fonts.googleapis.com/css?family=Short+Stack' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="css/base.css" media="all">
+	
+	<link rel="stylesheet" type="text/css" href="css/media.css" />
 	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="js/Math.uuid.js"></script>
 </head>
 <body>
-	<section class="container">
-		<section class="workspace" id="workspace"></section>
-		<section class="sidebar right" id="sidebar">
-			<input type="text" class="sidebar-title" id="title" value="Sticky Notes">
+	<div class="container">
+		<div class="workspace" id="workspace"></div>
+		<div class="sidebar" id="sidebar">
 			<div class="btnpanel" id="sidepanel">
 				<div class="button newnote" id="new_note"><span class="tooltip left">new note</span></div>
 				<div class="button info" id="note_info"><span class="tooltip left ">info</span></div>
@@ -21,9 +20,10 @@
 				<div class="button savenotes" id="note_save"><span class="tooltip left">save notes</span></div>
 				<div id="view" class="button view free"><span class="tooltip right">Sorted/Free</span></div>
 			</div>
-				<textarea class="textbox" id="note_text">Welcome! Click the plus button in the upper-left corner to create a new note.</textarea>
-		</section>
-	</section>
+			<input type="text" class="sidebar-title" id="title" value="Sticky Notes">
+			<textarea class="textbox" id="note_text">Welcome! Click the plus button in the upper-left corner to create a new note.</textarea>
+		</div>
+	</div>
 	<script type="text/javascript" src="js/sticky-core.js"></script>
 </body>
 </html>
