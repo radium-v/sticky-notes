@@ -174,18 +174,19 @@
 			cursor: pointer;
 			overflow: hidden;
 			padding: 2%;
-			word-wrap: break-word;
+			white-space: normal;
 		}
 
-			.tile:hover {
-				z-index: 1000 !important;
+			.tile:not(.sel) > .body {
+				opacity: 0.6;
 			}
 
 			.tile:not(.sel):hover > .body {
 				opacity: 1;
+				z-index: 1000 !important;
 			}
 
-			.sel > .body {
+			.tile:not(.sel):hover > .body, .sel > .body {
 				-webkit-animation: focus 0.14s linear forwards;
 				opacity: 1;
 			}
@@ -327,16 +328,6 @@
 		width: 160px;
 	}
 
-	.sel {
-		width: 300px;
-		height: 300px;
-		position: fixed;
-		z-index: 10000;
-		margin: auto;
-		top: 50px;
-		left: 50px:
-	}
-
 	.sidebar {
 		display: table-row;
 		height: 30%;
@@ -344,6 +335,10 @@
 		width: 100%;
 		box-shadow: 0 0 10px #000000;
 	}
+
+		.sidebar-title {
+			font-size: 16px;
+		}
 
 		.textbox {
 			border: none;
