@@ -1,37 +1,35 @@
 @charset "UTF-8";
 
-/* CSS-LESS-ish Definitions
-	@white = #FFFFFF
-	@beige = #CCCC99
-	@darkblue = #171A22
-	@fonts = Helvetica, Arial, sans-serif
-	@lightborder = lighten(@darkblue, 10%)
-	@sprite = "url('../img/sprites.png') no-repeat"
-	@yellow = #FFFF99
-	@square = 106px
-
-*/
-
 @media all {
 
 	body {
 		-webkit-user-select: none;
-		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMBAMAAACpRTGTAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///88PDw6Ojo4ODgzMzMwMDAuLi4mJiYkJCQiIiIgICDUErVSAAAAC3RSTlMA/////////////312fdUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS85LzEylx9tEQAAAEtJREFUCJljCC0FQoZQ9XJTIBmsFBrKMC0kNHQmg2ZoSKQhg4draEQqQ3iqa3goQ3FoaFA5g2qoa6gyQ1jkLKDK0ElCU4Fka2irKwDYFxScmOVGwgAAAABJRU5ErkJggg==) 0 0 repeat #171A22;
-		color: #FFFFFF;
+		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMBAMAAACpRTGTAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///88PDw6Ojo4ODgzMzMwMDAuLi4mJiYkJCQiIiIgICDUErVSAAAAC3RSTlMA/////////////312fdUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS85LzEylx9tEQAAAEtJREFUCJljCC0FQoZQ9XJTIBmsFBrKMC0kNHQmg2ZoSKQhg4draEQqQ3iqa3goQ3FoaFA5g2qoa6gyQ1jkLKDK0ElCU4Fka2irKwDYFxScmOVGwgAAAABJRU5ErkJggg==) repeat #171A22;
 		font: 14px/22px Helvetica, Arial, sans-serif;
-		height: 100%;
-		display: block;
+		margin: 0;
+		padding: 0;
 	}
 	
-	.container {		
-		overflow-y: auto;
-		overflow-x: hidden;
-		position: relative;
-		z-index: 1;
+	.container {
+		border-collapse: collapse;
+		display: table;
+		height: 100%;
+		height: 100%;
+		position: fixed;
 	}
 
+		.workspace {
+			border: 1px dashed rgba(145,145,145,0.7);
+			box-shadow: inset 0 0 10px rgba(145,145,145,0.7);
+			box-sizing: border-box;
+			display: table-cell;
+			overflow: scroll;
+			z-index: 1;
+			position: fixed;
+		}
+
 		.sidebar {
-			position: relative;
+			display: table-cell;
 		}
 
 			.sidebar-title {
@@ -48,15 +46,11 @@
 				outline: none;
 			}
 
-			.side-panel {
+			.btnpanel {
 				height: 30px;
 				display: block;
-				right: 0;
-				position: absolute;
-				top: 0;
 				padding: 5px;
-				text-align: center;
-				width: 30px;
+				width: 180px;
 				z-index: 5000
 			}
 
@@ -73,8 +67,7 @@
 				text-align: center;
 				opacity: 0;
 				top: 5px;
-				-webkit-transition: opacity 0.24s linear 0.32s,
-									margin 0.07s linear 0.32s;
+				-webkit-transition: opacity 0.24s linear 0.32s, margin 0.07s linear 0.32s;
 				white-space:nowrap;
 				padding: 0 5px;
 				z-index: 10000;
@@ -141,40 +134,16 @@
 					opacity: 0;
 				}
 
-			.newnote {
-				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzgvMTIvowp0AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAACAUlEQVRIie2WzWpTQRTHf1NEChHBJ1A3LgrZCC4KUgVzIi2+QNNShFKXXbupaezGdZeKIMXGF5DS5kSwVejKboQu3ESfQBADJZtxkXPbk9x7JX406aJ/GGbO5//O3Dnn3hBjZBQYGwnrOfEwcSFLGUJI6VS1AMwAS8Ad4KKZOsAu8ALYEpF2f2zWBQ6Zyj5iVb0PPAbu/mYTAO+BZyKy88/EqvoUWHHmDvAFODJ5HLjByQkArInIk78mVtUqsOpMr4CXIvLR+6vqbWAReOjUqyJS+2NiO95tUx0BSyLyOuXc+wDzdN/1uKmmRWR7YOJms1kAFJg0VUVE3jiC68CciZsi0nK2WaBu4j4gpVIpdeHyymnGkW54UkMRWLNR9Abz3TBx0nKlkEf8yOY2sJ5h/56zTrBusT5XDzLrGJiy+WuM8QCOj3fC9Lec7z1VvWzrQxFpxRgPQgjfzH+KDOTtOCmNdrlcTi5BBXhro+p8q05fAbCYn325BiI+deQRd2wuNBqNpJvUgQc2as635vR1AIu51JerB3nveA8oAddCCDeBT1YyLQBV/cHJcb8TkQ8+2GKuulwp5O34uc0FYDnDfiVnnWDZYn2ugYi36BY/wII1BY/PdPv3iq2PYb4LJu5brhTOVssc6UfCJR3+Z9GRD/9HwJGf/q/PMHDmWuY58X/HL/V99YaTt3b3AAAAAElFTkSuQmCC) 0 0 no-repeat transparent;
-				display: block;
-				height: 30px;
+			.button {
+				display: inline-block;
 				position: relative;
+				height: 30px;
 				width: 30px;
-				cursor: pointer;
 			}
 
-
-			#view {
-				-webkit-transition:  0.14s linear;
-				display: block;
-				height: 60px;
-				bottom: 10px;
-				right: 10px;
-				margin: 0 12px;
-				position: fixed;
-				width: 60px;
-				z-index: 5000
+			.button:hover {
+				cursor:pointer;
 			}
-
-				#view.free {
-					background: url(../img/sprites.png) no-repeat no-repeat -86px -174px transparent;
-				}
-
-				#view.sorted {
-					background: url(../img/sprites.png) no-repeat no-repeat -10px -174px transparent;
-				}
-	
-	#workspace {
-		margin-top: 30px;
-		width: 100%;
-	}
 
 	.tile, .placeholder {
 		color: #565667;
@@ -186,7 +155,7 @@
 
 	.placeholder {
 		background-color: #000000;
-		-webkit-animation: pulse 0.5s linear infinite;
+		-webkit-animation: pulse 2s ease-in-out forwards infinite;
 	}
 
 		.note {
@@ -200,8 +169,6 @@
 			-webkit-user-select: none;
 			height: 98%;
 			font: 12px/17px 'Short Stack', Helvetica, Arial, sans-serif;
-			width: 98%;
-			opacity: 0.4;
 			display: block;
 			cursor: pointer;
 			overflow: hidden;
@@ -214,8 +181,7 @@
 			}
 
 			.tile:not(.sel):hover > .body {
-				-webkit-animation: focus 0.14s linear forwards;
-				opacity: 0.9;
+				opacity: 1;
 			}
 
 			.sel > .body {
@@ -237,21 +203,27 @@
 				-webkit-transition: opacity 0.14s linear;
 			}
 
-			.tile:hover > .btn-close {
+			.sel > .btn-close {
 				opacity: 0.4;
 			}
 
-			.tile:hover > .btn-close:hover {
+			.sel > .btn-close:hover {
 				opacity: 1;
 			}
 
 		.textbox {
-			background: rgba(16, 16, 16, 0.4);
-			position: absolute;
-			border: 1px solid #454545;
-			border-radius: 10px;
-			color: #555555;
 			-webkit-transition: all 0.14s linear;
+			background: rgba(16, 16, 16, 0.4);
+			border-radius: 10px;
+			border: 1px solid #454545;
+			box-sizing: border-box;
+			color: #555555;
+			font-size: 15px;
+			line-height: 24px;
+			margin: 10px;
+			padding: 10px 15px;
+			width: 100%;
+			height: 100%;
 		}
 
 		.textbox:focus {
@@ -261,43 +233,33 @@
 			outline: none;
 		}
 
-		.note-options {
-			margin: 0;
-			padding: 0;
+		.newnote {
+			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzgvMTIvowp0AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAACAUlEQVRIie2WzWpTQRTHf1NEChHBJ1A3LgrZCC4KUgVzIi2+QNNShFKXXbupaezGdZeKIMXGF5DS5kSwVejKboQu3ESfQBADJZtxkXPbk9x7JX406aJ/GGbO5//O3Dnn3hBjZBQYGwnrOfEwcSFLGUJI6VS1AMwAS8Ad4KKZOsAu8ALYEpF2f2zWBQ6Zyj5iVb0PPAbu/mYTAO+BZyKy88/EqvoUWHHmDvAFODJ5HLjByQkArInIk78mVtUqsOpMr4CXIvLR+6vqbWAReOjUqyJS+2NiO95tUx0BSyLyOuXc+wDzdN/1uKmmRWR7YOJms1kAFJg0VUVE3jiC68CciZsi0nK2WaBu4j4gpVIpdeHyymnGkW54UkMRWLNR9Abz3TBx0nKlkEf8yOY2sJ5h/56zTrBusT5XDzLrGJiy+WuM8QCOj3fC9Lec7z1VvWzrQxFpxRgPQgjfzH+KDOTtOCmNdrlcTi5BBXhro+p8q05fAbCYn325BiI+deQRd2wuNBqNpJvUgQc2as635vR1AIu51JerB3nveA8oAddCCDeBT1YyLQBV/cHJcb8TkQ8+2GKuulwp5O34uc0FYDnDfiVnnWDZYn2ugYi36BY/wII1BY/PdPv3iq2PYb4LJu5brhTOVssc6UfCJR3+Z9GRD/9HwJGf/q/PMHDmWuY58X/HL/V99YaTt3b3AAAAAElFTkSuQmCC);
 		}
 
-			.note-options li {
-				background-position: 0 0;
-				background-repeat: no-repeat;
-				background-color: transparent;
-				width: 30px;
-				height: 30px;
-				display: block;
-			}
-
-			.note-options li:hover {
-				cursor: pointer
-			}
-
-		#note_info {
+		.info {
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAb0lEQVQYlWNgoA1gXCWAwmf/vwGFz/X/Awqf9X8DqgEmqFx3BxQu5//PKPza91+RuSwX36PIczj/v4CinuP/AhQ+z/8EFL78fwUUvv9fVOf0/0Tln/9ihsxlfv/oKjKf9f+bBajyv1D1R6FaTz0AAHjxINNTpQf5AAAAAElFTkSuQmCC);
 		}
 
-		#note_favorite {
+		.star {
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAjElEQVQYlWNgoA1wQePPROPfE0Dhsvx3QOFz/p+Awpf9/xCFH///K5zNVt458/7/vzNnlCeA+az3/0PAvwCIAikofyNMRz+Y+wNhwnuQ6gRk4////4ZkXT4afz+Q/xvBZXz//+7/fwgfsfz/rbj+fwCcz/GvgIH9fQOcz3MYSFgfgPO1QFoZFzHQAAAA8ZxILtDa7CsAAAAASUVORK5CYII=);
 		}
 
-		#note_list {
-			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAG1BMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7sB+oY0AAAACXRSTlMAiJmqu8zd7v8CT/ueAAAACXBIWXMAAAsSAAALEgHS3X78AAAAFHRFWHRDcmVhdGlvbiBUaW1lADEvNy8xMnfAGiIAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAA5SURBVBiVY2CgO2DpMLDoAAMHMJ+jIyEDwm+A8gsqkPlMoQKioWCgQJT56OrRzaO9+aj+QfcvXQEAqDYx4aGcOBwAAAAASUVORK5CYII=);
-		}
-
-		#note_pic {
-			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAeElEQVQYlWNgGBSA6f3/H8h8nf///yVA2awdHR33/////7MjAMzn/w8DHxD8Yybzkfk/GRRZ3iPxD/j+XxCPxA94//8bLxLf6P//X9xIfMf//3/wIPEX1P8/aI/E/8acyngf2f7JjLEo7vn/Du4+brh7N1A30IgBAPdycs5ks7pgAAAAAElFTkSuQmCC);
-		}
-
-		#note_save {
+		.savenotes {
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAJ1BMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7vARNh9AAAADXRSTlMAESIzRFVmd5nM3e7/zxu+qgAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAaUlEQVQYlWNgGDCQMwmFy7rnpAKK9JkzC5C4bGfOnDmAKn06AFV6M5QtMRUi7QDhMs05E4AszXXmzNEaoLQBlM9zBgxg0gzsYO4phGNiQPxFCLtY9qBIMzB4o0gzMDCvQfUKQwyKND0BAMviM7vK8Dw0AAAAAElFTkSuQmCC);
 		}
+
+		.view {
+			-webkit-transition: background-image 0.14s linear;
+		}
+
+			.view.free {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAMAAAAM7l6QAAAAA3NCSVQICAjb4U/gAAAAmVBMVEX//5n//5v//5r//Zj//pn//pj//Zf//Jf//Jb/+5b/+5X/+pX/+pT/+JL/+ZP/95H/9pD/9o//9Y7/9Y//9I//843/9I7/8oz/8o3/8Yv/74n/8Iv/8Ir/7oj/7Yf/7Ib/6oT/64X/6YP/6IL/54H/5oD/5X//5H7/433/4Xv/4nz/4Hr/33n/3Hb/3Xf/23X/2XP/023////fcDjVAAAAM3RSTlP/////////////////+v//6f/////T/9vfv6LF2quQiNmVa1sjP3xabjc7Nw4gLyEkEABEQakDAAAACXBIWXMAAAqcAAAKnAH00t8SAAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTEvMTLN0TdGAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAA7UlEQVQokdXQ2XLCIBQG4IQZo5KNNuOhpIEQ0LQatZb3f7iy9CKLetvpf8EFH8NZIvM00T/ik1If58e8L7c52bG2v88iQS7lnAdZc3vXRD7VdcRD1wCkaSqNAeSZjWt/Ev8j4uaQBxZjvlXhkhqFYxesJp2zUJFqJd5IUaDyNOE2SfIXm211M1+6fRfnCWuM2XrtyqvhztYuZANx6IkCV9f51lTHV55hE8cpYXK+VJ357m1fLs2cL7+zU7SYOwxn5y0AwGneL7h7peLQrnwLu+8F74/24Bi7CrVZcHgja0qyTD1gl6OW/RMe5S/5B/ESjiuz0g+uAAAAAElFTkSuQmCC);
+			}
+
+			.view.sorted {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAMAAAAM7l6QAAAAA3NCSVQICAjb4U/gAAAANlBMVEX//5n//pj//Zf//Jb/+5X/7oj/7Yf/7Ib/64X/6oT/6YP/6IL/54H/5oD/5H7/433/4nz////X5K8BAAAAEnRSTlP//////+agonyEfOefTXx8PABEEpVLAAAACXBIWXMAAAqcAAAKnAH00t8SAAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTEvMTLN0TdGAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAc0lEQVQokc2QSw6AIAxE8UMRsOrc/7JKNcKCwAKNvtVLJk2mo1BEfR470gHyAJ+q5ySmsRcMYKPese6VQMAU9Rdxpbk3FDDHs3wqpX+3jcp2EhjYrODWfDVXHtWW/26LK6PmrmnohNA8am7U5VJ+bNSX4h01lyqJsa7D+AAAAABJRU5ErkJggg==);
+			}
 
 
 }
@@ -347,39 +309,67 @@
 
 
 
+@media all and (min-width: 0) and (max-width: 400px) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-@media all and (min-width: 0) and (max-width: 839px) {
-
-	.container {
+	.workspace {
+		display: table-row;
+		border: 0;
+		box-shadow: none;
+		overflow: scroll;
 		width: 100%;
-		height: 50%;
+		height: 70%;
+		text-align: center;
+	}
+
+	.tile, .placeholder {
+		height: 160px;
+		width: 160px;
+		text-align: left;
+	}
+
+	.sel {
+		width: 80%;
+		height: 80%;
+		position: fixed;
+		z-index: 10000;
+		margin: auto;
+		top: 10%;
+		left: 10%:
+		right: 10%;
+		bottom: 10%;
+	}
+
+	.sidebar {
+		display: table-row;
+		height: 30%;
+		box-shadow: 0 0 10px #000000;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+@media all and (min-width: 401px) and (max-width: 839px) {
+
+	.workspace {
+		display: block;
+		width: 100%;
 		position: fixed;
 		top: 0;
 		left: 0;
 		right: 0;
+		bottom: 50%;
+		overflow-y: auto;
 	}
-
-		header {
-			height: 0;
-			border: none;
-			width: 0;
-		}
-
-			.app-title {
-				display: none;
-			}
 
 	.tile, .placeholder {
 		height: 165px;
@@ -396,12 +386,9 @@
 			}
 
 	.sidebar {
-		height: 50%;
+		display: table-row;
 		width: 100%;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
+		height: 50%;
 		box-shadow: inset 0 10px 15px #000000;
 	}
 
@@ -410,43 +397,6 @@
 			line-height: 50px;
 			margin: 0;
 			padding-left: 10px;
-		}
-
-		.textbox {
-			padding: 15px 10px;
-			top: 50px;
-			bottom: 50px;
-			left: 10px;
-			right: 10px;
-		}
-
-		.note-options li {
-			position: absolute;
-		}
-
-		#note_info {
-			top: 10px;
-			right: 50px;
-		}
-
-		#note_favorite {
-			top: 10px;
-			right: 10px;
-		}
-
-		#note_list {
-			bottom: 10px;
-			right: 90px;
-		}
-
-		#note_pic {
-			bottom: 10px;
-			right: 50px;
-		}
-
-		#note_save {
-			bottom: 10px;
-			right: 10px;
 		}
 
 }
@@ -503,16 +453,13 @@
 
 
 @media all and (min-width: 840px) and (max-width: 1119px) {
-	.container {
-		position: fixed;
-		left: 0;
-		top: 0;
+	.workspace {
 		height: 100%;
-		right: 300px;
+		width: 70%;
 		text-align: center;
 	}
 
-		.tile, .placeholder {
+		.tile {
 			width: 165px;
 			height: 165px;
 		}
@@ -522,26 +469,14 @@
 		}
 
 	.sidebar {
-		width: 300px;
-		height: 100%;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		position: fixed;
+		width: 30%;
+		min-width: 300px;
 	}
 
 		.sidebar-title {
 			font-size: 24px;
 			line-height: 50px;
 			text-indent: 10px;
-		}
-
-		.textbox {
-			padding: 15px 20px;
-			left: 10px;
-			right: 10px;
-			top: 95px;
-			min-height: 160px;
 		}
 
 		.note-options {
@@ -618,16 +553,12 @@
 
 
 @media all and (min-width: 1120px) {
-	.container {
-		top: 0;
-		left: 0;
-		bottom: 0;
-		position: fixed;
-		right: 400px;
-		margin: auto;
+	.workspace {
+		width: 80%;
+		height: 100%;
 	}
 
-		.tile, .placeholder {
+		.tile {
 			width: 220px;
 			height: 220px;
 		}
@@ -637,9 +568,8 @@
 		}
 
 	.sidebar {
-		width: 400px;
-		height: 100%;
-		float: right;
+		min-width: 400px;
+		width: 30%;
 	}
 
 		.sidebar-title {
@@ -647,29 +577,4 @@
 			line-height: 50px;
 			text-indent: 10px;
 		}
-
-		.textbox {
-			padding: 15px 20px;
-			left: 10px;
-			right: 10px;
-			top: 95px;
-			min-height: 160px;
-		}
-
-		.note-options {
-			margin-left: 10px;
-		}
-
-		.note-options li {
-			display: inline-block;
-			position: relative;
-		}
-
-		#note_save {
-			right: 10px;
-			top: 60px;
-			position: absolute;
-		}
 }
-
-/* Variables:sprite{6464:6497,6577:6610}.darkblue{793:800}.fonts{838:866,1149:1177,7828:7856}.white{811:818} */

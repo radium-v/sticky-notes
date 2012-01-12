@@ -153,6 +153,7 @@ var StickyApp = (function () {'use strict';
 				selectedTile.z = topZ++;
 			}
 			txtSidebarText.focus();
+			scrollTo();
 		}
 	}
 
@@ -177,7 +178,7 @@ var StickyApp = (function () {'use strict';
 		if (captured.id === 'view') {
 			ordering.push(ordering.shift());
 			setPosition();
-			captured.className = 'view ' + ordering[1][0];
+			captured.className = 'button view ' + ordering[1][0];
 			saveTiles();
 		}
 
@@ -195,7 +196,7 @@ var StickyApp = (function () {'use strict';
 			saveTiles();
 		}
 
-		if (captured.id === 'container') {
+		if (captured.id === 'workspace') {
 			deselectTile();
 		}
 	}
@@ -286,6 +287,21 @@ var StickyApp = (function () {'use strict';
 
 	}
 
+	function scrollTo() {
+		var ypos = parseInt(selectedTile.tile.offsetTop);
+		if(workspace.scrollTop > ypos) {
+			workspace.scrollTop--;
+			window.setTimeout(function() {
+				return scrollTo();
+			}, 2);
+		} else if (workspace.scrollTop < ypos) {
+			workspace.scrollTop++;
+			window.setTimeout(function() {
+				return scrollTo();
+			}, 2);
+		}
+	}
+
 	function init() {
 		isTouchEnabled = window.Touch || false;
 
@@ -298,11 +314,10 @@ var StickyApp = (function () {'use strict';
 		sidebar.addEventListener('keyup', function (e) { return window.onKeyUp(e) }, false);
 		sidebar.addEventListener('keydown', function (e) { return window.onKeyDown(e) }, false);
 		$(workspace).sortable({
-			'items': '.tile',
-			'placeholder': 'placeholder',
-			'revert': '140ms',
-			'tolerance': 'pointer',
-			'zIndex': '2000',
+			items: '.tile',
+			revert: '140ms',
+			tolerance: 'pointer',
+			zIndex: '2000',
 			stop : function(e, ui) { return sortTiles.apply(this, arguments); } }).sortable('disable');
 
 		if (localStorage) {
