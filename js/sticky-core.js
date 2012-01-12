@@ -153,7 +153,7 @@ var StickyApp = (function () {'use strict';
 				selectedTile.z = topZ++;
 			}
 			txtSidebarText.focus();
-			scrollTo();
+			move(selectedTile.tile, quad, 1000);
 		}
 	}
 
@@ -287,20 +287,42 @@ var StickyApp = (function () {'use strict';
 
 	}
 
-	function scrollTo() {
-		var ypos = parseInt(selectedTile.tile.offsetTop);
-		if(workspace.scrollTop > ypos) {
-			workspace.scrollTop--;
-			window.setTimeout(function() {
-				return scrollTo();
-			}, 2);
-		} else if (workspace.scrollTop < ypos) {
-			workspace.scrollTop++;
-			window.setTimeout(function() {
-				return scrollTo();
-			}, 2);
+
+		function animate(opts) {
+			var start = new Date;
+			var id = setInterval(function() {
+				var timePassed = new Date - start;
+				var progress = timePassed / opts.duration;
+				if (progress > 1){
+					progress = 1;
+				}
+				var delta = opts.delta(progress);
+				opts.step(delta);
+				if (progress == 1) {
+					clearInterval(id);
+				}
+			}, opts.delay || 10);
 		}
-	}
+
+		function move(element, delta, duration) {
+			var to = 500;
+			animate({
+				delay: 10,
+				duration: duration || 1000, // 1 sec by default
+				delta: quad,
+				step: function(delta) {
+					if(workspace.scrollTop < selectedTile.tile.offsetTop) {
+						workspace.scrollTop += delta * Math.abs(workspace.scrollTop - selectedTile.tile.offsetTop);
+					} else if(workspace.scrollTop > selectedTile.tile.offsetTop) {
+						workspace.scrollTop -= delta * Math.abs(workspace.scrollTop - selectedTile.tile.offsetTop);
+					}
+				}
+			});
+		}
+
+		function quad(progress) {
+			return Math.pow(progress, 2);
+		}
 
 	function init() {
 		isTouchEnabled = window.Touch || false;
