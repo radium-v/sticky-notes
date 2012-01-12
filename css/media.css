@@ -26,6 +26,8 @@
 			overflow: scroll;
 			z-index: 1;
 			position: fixed;
+			margin: auto;
+			text-align: center;
 		}
 
 		.sidebar {
@@ -71,6 +73,7 @@
 				white-space:nowrap;
 				padding: 0 5px;
 				z-index: 10000;
+				color: #FFFFFF;
 			}
 
 				.tooltip.left {
@@ -311,7 +314,7 @@
 
 
 
-@media all and (min-width: 0) and (max-width: 400px) {
+@media all and (min-width: 0) and (max-width: 799px) {
 
 	.workspace {
 		display: table-row;
@@ -320,12 +323,11 @@
 		overflow: scroll;
 		width: 100%;
 		height: 70%;
-		text-align: center;
 	}
 
 	.tile, .placeholder {
-		height: 160px;
-		width: 160px;
+		height: 130px;
+		width: 130px;
 	}
 
 	.sidebar {
@@ -365,17 +367,11 @@
 
 
 
-@media all and (min-width: 401px) and (max-width: 839px) {
+@media all and (min-width: 800px) and (max-width: 1119px) {
 
 	.workspace {
-		display: block;
-		width: 100%;
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 50%;
-		overflow-y: auto;
+		width: 65%;
+		height: 100%;
 	}
 
 	.tile, .placeholder {
@@ -393,8 +389,7 @@
 			}
 
 	.sidebar {
-		display: table-row;
-		width: 100%;
+		width: 35%;
 		height: 50%;
 		box-shadow: inset 0 10px 15px #000000;
 	}
@@ -459,49 +454,7 @@
 
 
 
-@media all and (min-width: 840px) and (max-width: 1119px) {
-	.workspace {
-		height: 100%;
-		width: 70%;
-		text-align: center;
-	}
 
-		.tile {
-			width: 165px;
-			height: 165px;
-		}
-
-		.sel > .body {
-			box-shadow: 0 0 24px rgba(0,0,0,0.8);
-		}
-
-	.sidebar {
-		width: 30%;
-		min-width: 300px;
-	}
-
-		.sidebar-title {
-			font-size: 24px;
-			line-height: 50px;
-			text-indent: 10px;
-		}
-
-		.note-options {
-			margin-left: 10px;
-		}
-
-		.note-options li {
-			display: inline-block;
-			position: relative;
-		}
-
-		#note_save {
-			right: 10px;
-			top: 60px;
-			position: absolute;
-		}
-
-}
 
 
 
@@ -561,7 +514,7 @@
 
 @media all and (min-width: 1120px) {
 	.workspace {
-		width: 80%;
+		width: 70%;
 		height: 100%;
 	}
 
@@ -575,7 +528,6 @@
 		}
 
 	.sidebar {
-		min-width: 400px;
 		width: 30%;
 	}
 
