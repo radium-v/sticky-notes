@@ -1,342 +1,408 @@
 var StickyApp = (function () {'use strict';
 
-	//Constants
-	var DEFAULT_APP_TITLE = 'Sticky Notes';
-	var DEFAULT_TEXT = 'Hello, world! This is a note.'
-	var DEFAULT_TITLE = 'Untitled Note';
-	var DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.';
-	var selectedTile, 
-		captured,
-		topZ = 0,
-		ordering = [['sorted', 'relative'], ['free', 'absolute']],
-		tiles = [],
-		workspace,
-		sidebar,
-		toggleView,
-		isTouchEnabled;
+    //Constants
+    var DEFAULT_APP_TITLE = 'Sticky Notes',
+        captured,
+        DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.',
+        DEFAULT_TEXT = 'Hello, world! This is a note.',
+        DEFAULT_TITLE = 'Untitled Note',
+        i,
+        isTouchEnabled = window.Touch || false,
+        nH,
+        nW,
+        ordering = [['sorted', 'relative'], ['free', 'absolute']],
+        selectedTile,
+        sidebar,
+        tiles = [],
+        toggleView,
+        topZ = 0,
+        txtSidebarText,
+        txtSidebarTitle,
+        workspace;
 
-	var Tile = function (args) {
-		var self = this;
-		if (this instanceof Tile) {
-			self.tile = document.createElement('div');
-			self.tileBody = document.createElement('pre');
-			self.closeButton = document.createElement('div');
-			self.tileBody.className = 'note';
-			self.closeButton.className = 'btn-close';
-			self.tile.appendChild(self.tileBody);
-			self.tile.appendChild(self.closeButton);
-			self.tile.className = 'tile';
-			self.position = 'absolute';
-			if (args) {
-				self.id = args.id;
-				self.left = args.left;
-				self.text = args.text;
-				self.title = args.title;
-				self.top = args.top;
-				self.z = ++topZ;
-			} else {
-				self.id = (Math.uuid(8));
-				self.left = Math.round((Math.random() * (window.innerWidth / 2)));
-				self.text = DEFAULT_TEXT;
-				self.title = DEFAULT_TITLE;
-				self.top = Math.round((Math.random() * (window.innerHeight / 2)));
-			}
-			self.tilt = 15;
-			return self;
-		} else {
-			return new Tile(arguments);
-		}
-	}
+    var Tile = function(args) {
+        var self = this, key;
+        if (this instanceof Tile) {
+            self.tile = document.createElement('div');
+            self.tileBody = document.createElement('pre');
+            self.closeButton = document.createElement('div');
+            self.tileBody.className = 'note';
+            self.closeButton.className = 'btn-close';
+            self.tile.appendChild(self.tileBody);
+            self.tile.appendChild(self.closeButton);
+            self.tile.className = 'tile';
+            self.position = 'absolute';
+            if (args) {
+                for (key in args) {
+                    if (args.hasOwnProperty(key)) {
+                        self[key] = args[key];
+                    }
+                }
+            } else {
+                self.id = (Math.uuid(8));
+                self.left = Math.round((Math.random() * (window.innerWidth / 2)));
+                self.text = DEFAULT_TEXT;
+                self.title = DEFAULT_TITLE;
+                self.top = Math.round((Math.random() * (window.innerHeight / 2)));
+            }
+            self.z = ++topZ;
+            self.tilt = 15;
+            return self;
+        } else {
+            return new Tile(arguments);
+        }
+    };
 
-	Tile.prototype = {
-		get id() { return this._id; },
-		set id(x) {
-			this.tile.id = x;
-			this._id = x;
-		},
-		get title() { return this._title;},
-		set title(x) { this._title = x; },
-		get text() { return this._text; },
-		set text(x) {
-			this.tileBody.innerText = x;
-			this._text = x;
-		},
-		get left() { return this._left; },
-		set left(x) {
-			var val = x + 'px';
-			this.tile.style.left = val;
-			this._left = x;
-		},
+    Tile.prototype = {
+        get id() {
+            return this._id;
+        },
 
-		get tilt() {
-			return this._tilt;
-		},
+        set id(value) {
+            this.tile.id = value;
+            this._id = value;
+        },
 
-		set tilt(x) {
-			this._tilt = Math.floor(Math.random() * x);
-			this._tilt = (Math.floor(Math.random() * 2) === 1) ? -this._tilt : this._tilt;
-			this.tile.style.webkitTransform = 'rotate(' + this._tilt + 'deg)';
-		},
+        get title() {
+            return this._title;
+        },
 
-		get top () {
-			return this._top;
-		},
+        set title(value) {
+            this._title = value;
+        },
 
-		set top (x) {
-			var val = x + 'px';
-			this.tile.style.top = val;
-			this._top = x;
-		},
-		get position() {
-			this._position = this.tile.style.position;
-			return this._position;
-		},
-		set position(x) {
-			this.tile.style.position = x;
-			this._position = x;
-		},
-		get z () { return this._z; },
-		set z (x) { 
-			this.tile.style.zIndex = x; 
-			this._z = x;
-		}
+        get text() {
+            return this._text;
+        },
 
-	}
+        set text(value) {
+            this.tileBody.innerText = value;
+            this._text = value;
+        },
 
-	window.onMouseDown = function(e) {
-		captured = isTouchEnabled ? e.touches[0].target.parentNode : e.target.parentNode;
-		if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
+        get left() {
+            return this._left;
+        },
 
-			var thisTile = getTile(captured);
-			thisTile.startX = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - thisTile.tile.offsetLeft;
-			thisTile.startY = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - thisTile.tile.offsetTop;
-			thisTile.z = ++topZ;
-			if (!('mouseMoveHandler' in thisTile)) {
-				thisTile.mouseMoveHandler = function(e) { return onMouseMove.apply(thisTile, arguments); }
-				thisTile.mouseUpHandler = function(e) { return onMouseUp.apply(thisTile, arguments); }
-			}
+        set left(value) {
+            this.tile.style.left = value + 'px';
+            this._left = value;
+        },
 
-			if(!window.Touch) {
-				e.preventDefault();
-				window.addEventListener('mousemove', thisTile.mouseMoveHandler, false);
-				window.addEventListener('mouseup', thisTile.mouseUpHandler, false);
-			} else {
-				window.addEventListener('touchend', thisTile.mouseUpHandler, false);
-				window.addEventListener('touchmove', thisTile.mouseUpHandler, false);
-			}
-		}
-	}
+        get tilt() {
+            return this._tilt;
+        },
 
-	window.onMouseMove = function(e) {
-		var self = this;
-		e.preventDefault();
-		self.left = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - self.startX;
-		self.top = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - self.startY;
-	}
+        set tilt(value) {
+            this._tilt = Math.floor(Math.random() * value);
+            this._tilt = (Math.floor(Math.random() * 2) === 1) ? -this._tilt : this._tilt;
+            this.tile.style.webkitTransform = 'rotate(' + this._tilt + 'deg)';
+        },
 
-	window.onMouseUp = function(e) {
-		window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
-		window.removeEventListener(isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
-		saveTiles();
-	}
+        get top () {
+            return this._top;
+        },
 
-	function saveTiles() {
-		var str;
-		localStorage.clear();
-		for(var i = 0; i < tiles.length; i++) {
-			str = {
-				'id' : tiles[i].id,
-				'left' : tiles[i].left,
-				'text' : tiles[i].text,
-				'tilt' : tiles[i].tilt,
-				'title' : tiles[i].title,
-				'top' : tiles[i].top,
-				'z' : tiles[i].z
-			};
-			localStorage.setItem('ordering', JSON.stringify(ordering));
-			localStorage.setItem('tile_' + i, JSON.stringify(str));
-		}
-	}
+        set top(value) {
+            this.tile.style.top = value + 'px';
+            this._top = value;
+        },
 
-	function selectTile(el) {
+        get position() {
+            this._position = this.tile.style.position;
+            return this._position;
+        },
 
-		if(el.className.indexOf('tile') > -1) {
-			selectedTile = getTile(el);
-			deselectTile();
-			var txtSidebarText = document.getElementById('note_text');
-			txtSidebarText.value = selectedTile.text;
-			var txtSidebarTitle = document.getElementById('title');
-			txtSidebarTitle.value = selectedTile.title;
-			if(selectedTile.tile.className.indexOf('sel') === -1) {
-				selectedTile.tile.className += ' sel';
-				selectedTile.z = topZ++;
-			}
-			txtSidebarText.focus();
-		}
-	}
+        set position(value) {
+            this.tile.style.position = value;
+            this._position = value;
+        },
 
-	function deselectTile() {
-		var s = document.getElementsByClassName('sel');
-		var str;
-		for(var i = 0; i < s.length; i++) {
-			str = s[i].className;
-			s[i].className = str.substring(0, str.indexOf('sel')) + str.substring(str.indexOf('sel') + 3);
-		}
+        get width() {
+            return this.tile.clientWidth;
+        },
 
-		document.getElementById('title').value = DEFAULT_APP_TITLE;
-		document.getElementById('note_text').value = DEFAULT_STARTER_TEXT;
-	}
+        get height() {
+            return this.tile.clientHeight;
+        },
 
-	window.onClick = function(e) {
-		captured = isTouchEnabled ? e.touches[0].target : e.target;
-		if (captured.className.indexOf('note') > -1) {
-			selectTile(captured.parentNode);
-		}
+        get z() {
+            return this._z;
+        },
 
-		if (captured.id === 'view') {
-			ordering.push(ordering.shift());
-			setPosition();
-			captured.className = 'button view ' + ordering[1][0];
-			saveTiles();
-		}
+        set z(value) {
+            this.tile.style.zIndex = value;
+            this._z = value;
+        }
 
-		if (captured.className === 'btn-close') {
-			removeTile(captured.parentNode);
-			saveTiles();
-		}
-		
-		if (captured.id === 'new_note') {
-			addNewTile();
-			saveTiles();
-		}
-		
-		if (captured.id === 'note_save') {
-			saveTiles();
-		}
+    };
 
-		if (captured.id === 'workspace') {
-			deselectTile();
-		}
-	}
+    function getTile(el) {
+        for (i = tiles.length - 1; i >= 0; i--) {
+            if (tiles[i].tile === el) {
+                return tiles[i];
+            }
+        }
+    }
 
-	window.onKeyUp = function(e) {
-		captured = isTouchEnabled ? e.touches[0].target : e.target;
-		var k = e.keyCode;
-		if (captured.id === 'note_text') {
-			selectedTile.text = captured.value;
-		}
+    function saveTiles() {
+        var str;
+        //localStorage.clear();
+        for(i = tiles.length - 1; i >= 0; i--) {
+            str = {
+                'id' : tiles[i].id,
+                'left' : tiles[i].left,
+                'text' : tiles[i].text,
+                'tilt' : tiles[i].tilt,
+                'title' : tiles[i].title,
+                'top' : tiles[i].top,
+                'z' : tiles[i].z
+            };
+            localStorage.setItem('ordering', JSON.stringify(ordering));
+            localStorage.setItem('tile_' + i, JSON.stringify(str));
+        }
+    }
 
-		if (captured.id === 'title') {
-			selectedTile.title = captured.value;
-		}
-	}
+    function deselectTile() {
+        var s = document.getElementsByClassName('sel'), str;
+        for (i = s.length - 1; i >= 0; i--) {
+            s[i].className = 'tile';
+        }
+        txtSidebarTitle.value = DEFAULT_APP_TITLE;
+        txtSidebarTitle.disabled = true;
+        txtSidebarText.value = DEFAULT_STARTER_TEXT;
+        txtSidebarText.disabled = true;
+    }
 
-	window.onKeyDown = function(e) {
-		captured = isTouchEnabled ? e.touches[0].target : e.target;
-		var k = e.keyCode;
-		if (captured.id === 'note_text') {
-			switch (k) {
-				case 9:
-					e.preventDefault();
-					if (e.shiftKey) {
-						(selectedTile.tile.previousSibling) ? selectTile(selectedTile.tile.previousSibling) : selectTile(tiles[tiles.length - 1].tile);
-					} else {
-						(selectedTile.tile.nextSibling) ? selectTile(selectedTile.tile.nextSibling) : selectTile(tiles[0].tile);
-					}
-			}
-		}
-	}
+    function selectTile(el) {
+        if (el.className.indexOf('tile') > -1) {
+            deselectTile();
+            selectedTile = getTile(el);
+            nW = workspace.clientWidth - selectedTile.width;
+            nH = workspace.clientHeight - selectedTile.height;
+            selectedTile.tile.className = 'tile sel';
+            selectedTile.z = topZ++;
+            txtSidebarText.value = selectedTile.text;
+            txtSidebarText.disabled = false;
+            txtSidebarTitle.value = selectedTile.title;
+            txtSidebarTitle.disabled = false;
+            txtSidebarText.focus();
+        }
+    }
 
-	function addNewTile (options) {
-		tiles.push(new Tile(options));
-		selectTile(tiles[tiles.length - 1].tile);
-		workspace.appendChild(tiles[tiles.length - 1].tile);
-		setPosition();
-		return tiles[tiles.length - 1];
-	}
+    function setPosition() {
+        for (i = tiles.length - 1; i >= 0; i--) {
+            tiles[i].position = ordering[0][1];
+            if (ordering[0][0] === 'sorted') {
+                tiles[i].tile.style.left = '';
+                tiles[i].tile.style.top = '';
+                $(workspace).sortable('enable');
+            } else {
+                tiles[i].left = tiles[i].left;
+                tiles[i].top = tiles[i].top;
+                $(workspace).sortable('disable');
+            }
+        }
+    }
 
-	function removeTile (thisTile) {
-		deselectTile();
-		if (thisTile.className.indexOf('tile') > -1) {
-			workspace.removeChild(thisTile);
-			for (var i = 0; i < tiles.length; i++) {
-				if (tiles[i].tile === thisTile) {
-					tiles.splice(i, 1);
-				}
-			}
-			saveTiles();
-		}
-	}
+    function addNewTile (options) {
+        selectedTile = new Tile(options);
+        tiles.push(selectedTile);
+        workspace.appendChild(selectedTile.tile);
+        setPosition();
+    }
 
-	function setPosition() {
-		for (var i = 0; i < tiles.length; i++) {
-			tiles[i].position = ordering[0][1];
-			if (ordering[0][0] === 'sorted') {
-				tiles[i].tile.style.left = 'inherit';
-				tiles[i].tile.style.top = 'inherit';
-				$(workspace).sortable('enable');
-			} else {
-				tiles[i].left = tiles[i].left;
-				tiles[i].top = tiles[i].top;
-				$(workspace).sortable('disable');
-			}
-		}
-	}
+    function removeTile (thisTile) {
+        deselectTile();
+        if (thisTile.className.indexOf('tile') > -1) {
+            workspace.removeChild(thisTile);
+            for (i = tiles.length - 1; i >= 0; i--) {
+                if (tiles[i].tile === thisTile) {
+                    tiles.splice(i, 1);
+                }
+            }
+            saveTiles();
+        }
+    }
 
-	function getTile(el) {
-		for (var i = 0; i < tiles.length; i++) {
-			if (tiles[i].tile.id === el.id) {
-				return tiles[i];
-			}
-		}
-	}
+    function onMouseMove(e) {
+        var nX, nY;
+        e.preventDefault();
+        if (isTouchEnabled) {
+            if (selectedTile.left >= 0 && selectedTile.left <= workspace.clientHeight) {
+                selectedTile.left = e.touches[0].clientX - this.startY;
+            }
+            selectedTile.top = e.touches[0].clientY;
+        } else {
+            nX = e.clientX - selectedTile.startX;
+            nY = e.clientY - selectedTile.startY;
+            selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
+            selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
+        }
+    }
 
-	function sortTiles(e, ui) {
-		var arr = $(workspace).sortable('toArray');
-		var dummy = new Array();
-		for(var i = 0; i < arr.length; i++) {
-			while (tiles[0].tile.id !== arr[i]) {
-				tiles.push(tiles.shift());
-			}
-			dummy.push(tiles.shift());
-		}
-		tiles = dummy;
-		saveTiles();
-	}
+    function onMouseUp(e) {
+        var l, t, maxL, maxT, w, h;
+        maxL = window.clientHeight;
+        maxT = workspace.clientWidth;
+        l = selectedTile.left;
+        w = selectedTile.width;
+        t = selectedTile.top;
+        h = selectedTile.height;
+        selectedTile.left = (l < 0) ? 0 : ((l > (maxL - w)) ? maxL - w : l);
+        selectedTile.top = (t < 0) ? 0 : ((t > (maxT - h)) ? maxT - h : t);
+        window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
+        window.removeEventListener(isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
+        saveTiles();
+    }
 
-	function init() {
-		isTouchEnabled = window.Touch || false;
+    function onMouseDown(e) {
+        captured = isTouchEnabled ? e.touches[0].target.parentNode : e.target.parentNode;
+        if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
+            selectTile(captured);
+            selectedTile.startX = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - selectedTile.tile.offsetLeft;
+            selectedTile.startY = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - selectedTile.tile.offsetTop;
+            selectedTile.z = ++topZ;
+            if (!(selectedTile.hasOwnProperty('mouseMoveHandler'))) {
+                selectedTile.mouseMoveHandler = function(e) { return onMouseMove.apply(selectedTile, arguments); };
+                selectedTile.mouseUpHandler = function(e) { return onMouseUp.apply(selectedTile, arguments); };
+            }
 
-		workspace = document.getElementById('workspace');
+            if(!window.Touch) {
+                e.preventDefault();
+                window.addEventListener('mousemove', selectedTile.mouseMoveHandler, false);
+                window.addEventListener('mouseup', selectedTile.mouseUpHandler, false);
+            } else {
+                window.addEventListener('touchend', selectedTile.mouseUpHandler, false);
+                window.addEventListener('touchmove', selectedTile.mouseUpHandler, false);
+            }
+        }
+    }
+    
+    function onKeyUp(e) {
+        captured = isTouchEnabled ? e.touches[0].target : e.target;
+        var k = e.keyCode;
+        if (captured === txtSidebarText && (txtSidebarText.disabled === false)) {
+            selectedTile.text = captured.value;
+        }
 
-		window.addEventListener('click', function (e) { return window.onClick(e) }, true);
-		window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return window.onMouseDown(e) }, true);
+        if (captured === txtSidebarTitle) {
+            selectedTile.title = txtSidebarTitle.value;
+        }
+    }
 
-		sidebar = document.getElementById('sidebar');
-		sidebar.addEventListener('keyup', function (e) { return window.onKeyUp(e) }, false);
-		sidebar.addEventListener('keydown', function (e) { return window.onKeyDown(e) }, false);
-		$(workspace).sortable({
-			items: '.tile',
-			revert: '140ms',
-			tolerance: 'pointer',
-			zIndex: '2000',
-			stop : function(e, ui) { return sortTiles.apply(this, arguments); } }).sortable('disable');
+    function onKeyDown(e) {
+        captured = isTouchEnabled ? e.touches[0].target : e.target;
+        var k = e.keyCode;
+        if (captured === txtSidebarText) {
+            switch (k) {
+                case 9:
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        if (selectedTile.tile.previousSibling) {
+                            selectTile(selectedTile.tile.previousSibling);
+                        } else {
+                            selectTile(tiles[tiles.length - 1]);
+                        }
+                    } else {
+                        if (selectedTile.tile.nextSibling) {
+                            selectTile(selectedTile.tile.nextSibling);
+                        } else {
+                            selectTile(tiles[0].tile);
+                        }
+                    }
+                break;
+            }
+        }
+    }
 
-		if (localStorage) {
-			for(var i = 0; i < localStorage.length; i++) {
-				if ('tile_' + i in localStorage) {
-					addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
-				}
-			}
-			if ('ordering' in localStorage) {
-				ordering = JSON.parse(localStorage.getItem('ordering'));
-			}
-		}
+    function onClick(e) {
+        captured = isTouchEnabled ? e.touches[0].target : e.target;
+        if (captured.className.indexOf('note') !== -1) {
+            selectTile(captured.parentNode);
+        }
 
-		setPosition();
-		deselectTile();
-	}
+        if (captured.id === 'view') {
+            ordering.push(ordering.shift());
+            setPosition();
+            captured.className = 'button view ' + ordering[1][0];
+        }
 
-	init();
+        if (captured.className === 'btn-close') {
+            removeTile(captured.parentNode);
+            saveTiles();
+        }
+        
+        if (captured.id === 'new_note') {
+            addNewTile();
+        }
+        
+        if (captured.id === 'note_save') {
+            saveTiles();
+        }
 
-})();
+        if (captured === workspace) {
+            deselectTile();
+        }
+    }
+
+
+    function sortTiles(e, ui) {
+        var arr = $(workspace).sortable('toArray'), dummy = [];
+        for (i = arr.length - 1; i >= 0; i--) {
+            while (tiles[0].tile.id !== arr[i]) {
+                tiles.push(tiles.shift());
+            }
+            dummy.push(tiles.shift());
+        }
+        tiles = dummy;
+        saveTiles();
+    }
+
+    function init() {
+
+        workspace = document.getElementById('workspace');
+        sidebar = document.getElementById('sidebar');
+        txtSidebarTitle = document.getElementById('title');
+        txtSidebarText = document.getElementById('note_text');
+
+        window.addEventListener('click', function (e) { return onClick(e); }, true);
+        window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return onMouseDown(e); }, true);
+
+        sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
+        sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
+
+        
+        //txtSidebarText.addEventListener('blur', function (e) { return onBlur(e); }, true);
+
+        $(document).ready(function() {
+            $(workspace).sortable({
+                items: '.tile',
+                revert: '140ms',
+                tolerance: 'pointer',
+                zIndex: '2000',
+                stop : function(e, ui) {
+                    return sortTiles.apply(this, arguments);
+                }
+            }).sortable('disable');    
+        });
+        
+
+        if (localStorage) {
+            for(i = localStorage.length - 1; i >= 0; i--) {
+                if (localStorage.hasOwnProperty('tile_' + i)) {
+                    addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
+                }
+            }
+            if (localStorage.hasOwnProperty('ordering')) {
+                ordering = JSON.parse(localStorage.getItem('ordering'));
+            }
+        }
+
+        setPosition();
+        deselectTile();
+    }
+
+    init();
+
+}());

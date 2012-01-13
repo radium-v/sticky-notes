@@ -10,7 +10,7 @@
 	<script type="text/javascript" src="js/Math.uuid.js"></script>
 </head>
 <body>
-	<div class="container">
+	<div class="container" id="container">
 		<div class="workspace" id="workspace"></div>
 		<div class="sidebar" id="sidebar">
 			<div class="btnpanel" id="sidepanel">
@@ -21,9 +21,17 @@
 				<div id="view" class="button view free"><span class="tooltip right">Sorted/Free</span></div>
 			</div>
 			<input type="text" class="sidebar-title" id="title" value="Sticky Notes">
-			<textarea class="textbox" id="note_text">Welcome! Click the plus button in the upper-left corner to create a new note.</textarea>
+			<textarea class="textbox box" id="note_text">Welcome! Click the plus button in the upper-left corner to create a new note.</textarea>
+			<div id="box_info" class="box">
+				Hello, world!
+			</div>
+		</div>
+
+		<div class="splash">
+			
 		</div>
 	</div>
+
 	<script type="text/javascript" src="js/sticky-core.js"></script>
 </body>
 </html>
