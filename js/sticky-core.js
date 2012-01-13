@@ -6,7 +6,6 @@ var StickyApp = (function () {'use strict';
         DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.',
         DEFAULT_TEXT = 'Hello, world! This is a note.',
         DEFAULT_TITLE = 'Untitled Note',
-        i,
         isTouchEnabled = window.Touch || false,
         nH,
         nW,
@@ -138,7 +137,7 @@ var StickyApp = (function () {'use strict';
     };
 
     function getTile(el) {
-        for (i = tiles.length - 1; i >= 0; i--) {
+        for (var i = tiles.length - 1; i >= 0; i--) {
             if (tiles[i].tile === el) {
                 return tiles[i];
             }
@@ -147,8 +146,8 @@ var StickyApp = (function () {'use strict';
 
     function saveTiles() {
         var str;
-        //localStorage.clear();
-        for(i = tiles.length - 1; i >= 0; i--) {
+        localStorage.clear();
+        for(var i = tiles.length - 1; i >= 0; i--) {
             str = {
                 'id' : tiles[i].id,
                 'left' : tiles[i].left,
@@ -165,7 +164,7 @@ var StickyApp = (function () {'use strict';
 
     function deselectTile() {
         var s = document.getElementsByClassName('sel'), str;
-        for (i = s.length - 1; i >= 0; i--) {
+        for (var i = s.length - 1; i >= 0; i--) {
             s[i].className = 'tile';
         }
         txtSidebarTitle.value = DEFAULT_APP_TITLE;
@@ -191,7 +190,7 @@ var StickyApp = (function () {'use strict';
     }
 
     function setPosition() {
-        for (i = tiles.length - 1; i >= 0; i--) {
+        for (var i = tiles.length - 1; i >= 0; i--) {
             tiles[i].position = ordering[0][1];
             if (ordering[0][0] === 'sorted') {
                 tiles[i].tile.style.left = '';
@@ -216,7 +215,7 @@ var StickyApp = (function () {'use strict';
         deselectTile();
         if (thisTile.className.indexOf('tile') > -1) {
             workspace.removeChild(thisTile);
-            for (i = tiles.length - 1; i >= 0; i--) {
+            for (var i = tiles.length - 1; i >= 0; i--) {
                 if (tiles[i].tile === thisTile) {
                     tiles.splice(i, 1);
                 }
@@ -335,6 +334,7 @@ var StickyApp = (function () {'use strict';
         
         if (captured.id === 'new_note') {
             addNewTile();
+            saveTiles();
         }
         
         if (captured.id === 'note_save') {
@@ -349,7 +349,7 @@ var StickyApp = (function () {'use strict';
 
     function sortTiles(e, ui) {
         var arr = $(workspace).sortable('toArray'), dummy = [];
-        for (i = arr.length - 1; i >= 0; i--) {
+        for (var i = arr.length - 1; i >= 0; i--) {
             while (tiles[0].tile.id !== arr[i]) {
                 tiles.push(tiles.shift());
             }
@@ -372,9 +372,6 @@ var StickyApp = (function () {'use strict';
         sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
         sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
 
-        
-        //txtSidebarText.addEventListener('blur', function (e) { return onBlur(e); }, true);
-
         $(document).ready(function() {
             $(workspace).sortable({
                 items: '.tile',
@@ -389,7 +386,7 @@ var StickyApp = (function () {'use strict';
         
 
         if (localStorage) {
-            for(i = localStorage.length - 1; i >= 0; i--) {
+            for(var i = localStorage.length - 1; i >= 0; i--) {
                 if (localStorage.hasOwnProperty('tile_' + i)) {
                     addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
                 }
@@ -404,5 +401,8 @@ var StickyApp = (function () {'use strict';
     }
 
     init();
+
+
+
 
 }());
