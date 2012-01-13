@@ -117,8 +117,18 @@ var StickyApp = (function () {'use strict';
             this._position = value;
         },
 
+        set width(value) {
+            this.tile.clientWidth = value;
+            this._width = value;
+        },
+
         get width() {
             return this.tile.clientWidth;
+        },
+
+        set height(value) {
+            this.tile.clientHeight = value;
+            this._height = value;
         },
 
         get height() {
@@ -241,15 +251,6 @@ var StickyApp = (function () {'use strict';
     }
 
     function onMouseUp(e) {
-        var l, t, maxL, maxT, w, h;
-        maxL = window.clientHeight;
-        maxT = workspace.clientWidth;
-        l = selectedTile.left;
-        w = selectedTile.width;
-        t = selectedTile.top;
-        h = selectedTile.height;
-        selectedTile.left = (l < 0) ? 0 : ((l > (maxL - w)) ? maxL - w : l);
-        selectedTile.top = (t < 0) ? 0 : ((t > (maxT - h)) ? maxT - h : t);
         window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
         window.removeEventListener(isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
         saveTiles();
@@ -401,8 +402,5 @@ var StickyApp = (function () {'use strict';
     }
 
     init();
-
-
-
 
 }());
