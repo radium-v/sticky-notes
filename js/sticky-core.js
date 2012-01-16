@@ -1,7 +1,6 @@
 var StickyApp = (function () {'use strict';
 
-    //Constants
-    var DEFAULT_APP_TITLE = 'Sticky Notes',
+    var DEFAULT_APP_TITLE = '',
         captured,
         DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.',
         DEFAULT_TEXT = 'Hello, world! This is a note.',
@@ -11,15 +10,15 @@ var StickyApp = (function () {'use strict';
         nW,
         ordering = [['sorted', 'relative'], ['free', 'absolute']],
         selectedTile,
-        sidebar,
+        sidebar = document.getElementById('sidebar'),
         tiles = [],
         toggleView,
         topZ = 0,
-        txtSidebarText,
-        txtSidebarTitle,
-        workspace;
+        txtSidebarText = document.getElementById('textbox'),
+        txtSidebarTitle = document.getElementById('title'),
+        workspace = document.getElementById('workspace'),
 
-    var Tile = function(args) {
+    Tile = function(args) {
         var self = this, key;
         if (this instanceof Tile) {
             self.tile = document.createElement('div');
@@ -117,22 +116,22 @@ var StickyApp = (function () {'use strict';
             this._position = value;
         },
 
+        get width() {
+            return this.tile.clientWidth;
+        },
+
         set width(value) {
             this.tile.clientWidth = value;
             this._width = value;
         },
 
-        get width() {
-            return this.tile.clientWidth;
+        get height() {
+            return this.tile.clientHeight;
         },
 
         set height(value) {
             this.tile.clientHeight = value;
             this._height = value;
-        },
-
-        get height() {
-            return this.tile.clientHeight;
         },
 
         get z() {
@@ -178,9 +177,10 @@ var StickyApp = (function () {'use strict';
             s[i].className = 'tile';
         }
         txtSidebarTitle.value = DEFAULT_APP_TITLE;
+        txtSidebarTitle.blur();
         txtSidebarTitle.disabled = true;
-        txtSidebarText.value = DEFAULT_STARTER_TEXT;
-        txtSidebarText.disabled = true;
+        txtSidebarText.innerText = DEFAULT_STARTER_TEXT;
+        txtSidebarText.setAttribute('contenteditable', 'false');
     }
 
     function selectTile(el) {
@@ -191,11 +191,11 @@ var StickyApp = (function () {'use strict';
             nH = workspace.clientHeight - selectedTile.height;
             selectedTile.tile.className = 'tile sel';
             selectedTile.z = topZ++;
-            txtSidebarText.value = selectedTile.text;
-            txtSidebarText.disabled = false;
+            txtSidebarText.innerText = selectedTile.text;
+            txtSidebarText.setAttribute('contenteditable', 'true');
             txtSidebarTitle.value = selectedTile.title;
             txtSidebarTitle.disabled = false;
-            txtSidebarText.focus();
+            txtSidebarTitle.focus();
         }
     }
 
@@ -205,12 +205,18 @@ var StickyApp = (function () {'use strict';
             if (ordering[0][0] === 'sorted') {
                 tiles[i].tile.style.left = '';
                 tiles[i].tile.style.top = '';
-                $(workspace).sortable('enable');
             } else {
                 tiles[i].left = tiles[i].left;
                 tiles[i].top = tiles[i].top;
-                $(workspace).sortable('disable');
             }
+        }
+
+        if (ordering[0][0] === 'sorted') {
+            $(workspace).sortable('enable');
+            console.log('ordered!');
+        } else {
+            $(workspace).sortable('disable');
+            console.log('Not ordered!');
         }
     }
 
@@ -219,6 +225,7 @@ var StickyApp = (function () {'use strict';
         tiles.push(selectedTile);
         workspace.appendChild(selectedTile.tile);
         setPosition();
+        selectTile(selectedTile.tile);
     }
 
     function removeTile (thisTile) {
@@ -238,15 +245,28 @@ var StickyApp = (function () {'use strict';
         var nX, nY;
         e.preventDefault();
         if (isTouchEnabled) {
-            if (selectedTile.left >= 0 && selectedTile.left <= workspace.clientHeight) {
-                selectedTile.left = e.touches[0].clientX - this.startY;
-            }
-            selectedTile.top = e.touches[0].clientY;
+            nX = e.touches[0].clientX - selectedTile.startX;
+            nY = e.touches[0].clientY - selectedTile.startY;
+            selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
+            selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
         } else {
             nX = e.clientX - selectedTile.startX;
             nY = e.clientY - selectedTile.startY;
             selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
             selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
+        }
+    }
+
+    function enforceBounds() {
+        if (ordering[0][0] === 'free') {
+            for (var i = tiles.length - 1; i >= 0; i--) {
+                    tiles[i].left = (tiles[i].left < 0) ? 0 : 
+                        ((tiles[i].left > (workspace.clientWidth - tiles[i].width)) ? 
+                        (workspace.clientWidth - tiles[i].width) : tiles[i].left);
+                    tiles[i].top = (tiles[i].top < 0) ? 0 : 
+                        ((tiles[i].top > (workspace.clientHeight - tiles[i].height)) ? 
+                        (workspace.clientHeight - tiles[i].height) : tiles[i].top);
+            } 
         }
     }
 
@@ -282,8 +302,8 @@ var StickyApp = (function () {'use strict';
     function onKeyUp(e) {
         captured = isTouchEnabled ? e.touches[0].target : e.target;
         var k = e.keyCode;
-        if (captured === txtSidebarText && (txtSidebarText.disabled === false)) {
-            selectedTile.text = captured.value;
+        if (captured === txtSidebarText && (txtSidebarText.getAttribute('contenteditable') === 'true')) {
+            selectedTile.text = txtSidebarText.innerText;
         }
 
         if (captured === txtSidebarTitle) {
@@ -297,21 +317,32 @@ var StickyApp = (function () {'use strict';
         if (captured === txtSidebarText) {
             switch (k) {
                 case 9:
-                    e.preventDefault();
-                    if (e.shiftKey) {
-                        if (selectedTile.tile.previousSibling) {
-                            selectTile(selectedTile.tile.previousSibling);
-                        } else {
-                            selectTile(tiles[tiles.length - 1]);
-                        }
-                    } else {
+                    if (!e.shiftKey) {
+                        e.preventDefault();
                         if (selectedTile.tile.nextSibling) {
                             selectTile(selectedTile.tile.nextSibling);
                         } else {
                             selectTile(tiles[0].tile);
                         }
+                        saveTiles();
                     }
                 break;
+            }
+        }
+
+        if (captured === txtSidebarTitle) {
+            switch (k) {
+                case 9:
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                        if (selectedTile.tile.previousSibling) {
+                            selectTile(selectedTile.tile.previousSibling);
+                        } else {
+                            selectTile(tiles[tiles.length - 1].tile);
+                        }
+                        saveTiles();
+                    }
+                    break;
             }
         }
     }
@@ -349,7 +380,7 @@ var StickyApp = (function () {'use strict';
 
 
     function sortTiles(e, ui) {
-        var arr = $(workspace).sortable('toArray'), dummy = [];
+        var arr = $(workspace).sortable('toArray'), dummy = [], i;
         for (var i = arr.length - 1; i >= 0; i--) {
             while (tiles[0].tile.id !== arr[i]) {
                 tiles.push(tiles.shift());
@@ -361,19 +392,14 @@ var StickyApp = (function () {'use strict';
     }
 
     function init() {
-
-        workspace = document.getElementById('workspace');
-        sidebar = document.getElementById('sidebar');
-        txtSidebarTitle = document.getElementById('title');
-        txtSidebarText = document.getElementById('note_text');
-
+        
         window.addEventListener('click', function (e) { return onClick(e); }, true);
         window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return onMouseDown(e); }, true);
+        window.addEventListener('resize', function(e) { return enforceBounds(); }, false);
 
         sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
         sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
 
-        $(document).ready(function() {
             $(workspace).sortable({
                 items: '.tile',
                 revert: '140ms',
@@ -382,22 +408,21 @@ var StickyApp = (function () {'use strict';
                 stop : function(e, ui) {
                     return sortTiles.apply(this, arguments);
                 }
-            }).sortable('disable');    
-        });
+            }).sortable('disable');
         
 
         if (localStorage) {
-            for(var i = localStorage.length - 1; i >= 0; i--) {
+            for(var i = 0; i < localStorage.length; i++) {
                 if (localStorage.hasOwnProperty('tile_' + i)) {
                     addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
                 }
             }
             if (localStorage.hasOwnProperty('ordering')) {
                 ordering = JSON.parse(localStorage.getItem('ordering'));
+                setPosition();
             }
         }
 
-        setPosition();
         deselectTile();
     }
 
