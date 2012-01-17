@@ -1,4 +1,20 @@
+::-webkit-scrollbar {
+	width: 5px;
+}
 
+::-webkit-scrollbar-track {
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 5px;
+	background-color: rgba(255, 255, 192, 0.7);
+}
+
+::-webkit-resizer {
+	display: none;
+}
 
 	body {
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMBAMAAACpRTGTAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///88PDw6Ojo4ODgzMzMwMDAuLi4mJiYkJCQiIiIgICDUErVSAAAAC3RSTlMA/////////////312fdUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS85LzEylx9tEQAAAEtJREFUCJljCC0FQoZQ9XJTIBmsFBrKMC0kNHQmg2ZoSKQhg4draEQqQ3iqa3goQ3FoaFA5g2qoa6gyQ1jkLKDK0ElCU4Fka2irKwDYFxScmOVGwgAAAABJRU5ErkJggg==) repeat #171A22;
@@ -8,6 +24,64 @@
 		display: table;
 		overflow: hidden;
 	}
+
+	a:link, a:visited {
+		color: #336699;
+		text-decoration: none;
+		border-bottom: 1px dashed #336699;
+	}
+
+	.splash {
+		background-color: rgba(60,60,60,0.8);
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		display: none;
+		z-index: 100;
+	}
+
+	.splash-note {
+		background: -webkit-linear-gradient(top, #FFFFC9 0%, #FFFFC9 10%, #FFFF99 10%, #FFFF99 24%, #FFFF9D 24%, #FFFFE9 100%) 0 0 no-repeat #FFFFC9;
+		box-shadow: 0 0 50px #000000;
+		width: 500px;
+		height: 500px;
+		position: absolute;
+		box-sizing: border-box;
+		padding-top: 90px;
+		text-align: center;
+		font-size: 19px;
+		line-height: 23px;
+		display: block;
+		color: #555555;
+		position: relative;
+	}
+
+		.splash-title {
+			background: url(../img/sticky-title.png) 0 0 no-repeat transparent;
+			color: transparent;
+			width: 359px;
+			height: 63px;
+			margin: auto;
+		}
+
+		.source {
+			margin: 30px auto;
+			width: auto;
+			display: inline-block;
+		}
+
+		.require {
+			font-size: 13px;
+		}
+
+			.require:before {
+				display: block;
+				content: '';
+				background: url(../img/chrome-safari.png) 0 0 no-repeat transparent;
+				width: 100px;
+				height: 50px;
+				margin: auto;
+			}
 	
 	.container {
 		display: table-cell;
@@ -20,7 +94,8 @@
 			display: table-cell;
 			z-index: 1;
 			padding-left: 20px;
-			overflow-y: scroll;
+			overflow-y: auto;
+			overflow-x: hidden;
 			position: fixed;
 		}
 
@@ -41,7 +116,6 @@
 				margin: 10px 0px;
 				font-weight: 300;
 				display: block;
-				text-overflow: ellipsis;
 				text-shadow: 0 1px 1px #000000;
 				-webkit-transition: all 0.14s linear;
 			}
@@ -235,7 +309,7 @@
 				-webkit-animation: focus 0.14s linear forwards;
 			}
 
-			.btn-close {
+			.btn-close, .close-splash {
 				-webkit-transition: opacity 0.07s ease-in-out 0.14s;
 				background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAbCAMAAABVyG9ZAAAAA3NCSVQICAjb4U/gAAAAwFBMVEX///8FBggAAAD///8AAAAABQUAAAAAAAAAAAP39/f8/PwICAjv7+/AwsIAAADm5ub////8/Pz39/f8/Pzy8/O2trZBQUHW19ejo6Ofn5+DhYZxcXFJSUkaGhqOjo6lpaSfn5/MzMx+gojR0dGjo6Pv7+/q6ur8/Pzf39/y8/Pv7+/////y8/Pq6urj4+Pf39/MzMyvr6+pqamOjo6KiopsbG5paWlfYWNdXV1SVFY5OTkvLy+ZmZmIhoafn5+Ojo4Saz3wAAAAQHRSTlMA/xH/Iv8zRP///////1XM3d3d7v////////////8iM0R3d4iZu7vMzN3d7u7///////////////////8iIjMzveoCvAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAWNJREFUKJFd0Il2gjAQBVDJEDZFFsEFtcrqrljr2u3//6ozCVjadzhKcs9zTFqtKrO4cDcbt4hnrb/5SF0A6Ozww00/mzLPwQrPCuZ2NKGYN2QBZV+pMjnA4mkvOYRt5Zn2EPKXilIoG4I5Qirl2zMfuL5fafc9mmJv530JiuFIIwCGitLvQIiLN4hJWAE3XPVNNBR4pa6VMyLPFAPGaPjYYuzBQ2Kst5fDxxbUopQ9xlpMrWkSgJjH8d3uqUR+IAXnYG9kcG4YA19QAfTfpyg2zTtxzpWgEJTBiS6P5vCzCTbWLpAJSvzOlM5yaivcuI8eSKWfCNIycRaKwXGf8whSjYipXQciSVzkajlYooOpWrKGkSQDW5G5TqhEZ0ZzYI/3Sj93GYBDwsQlqprezbZgHsJwEMA2TXRZkjVdT7LlyrJWyyzR9bokDVHvYvBL+xVhEiU0hEwghaAhNVL+Q4Uiz40fPIYbqZLRr9gAAAAASUVORK5CYII=) 0 0 no-repeat transparent;
 				cursor: pointer;
@@ -258,6 +332,13 @@
 				opacity: 1;
 			}
 
+			.close-splash {
+				-webkit-transform: scale(1.4);
+				opacity: 1;
+				display: block;
+				top: -10px;
+			}
+
 		.textbox {
 			-webkit-transition: all 0.14s linear;
 			background-color: #111111;
@@ -269,6 +350,7 @@
 			line-height: 21px;
 			min-height: 117px;
 			padding: 10px 15px;
+			overflow-y: auto;
 			margin: 0 0 10px 0;
 			width: 100%;
 		}

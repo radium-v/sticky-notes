@@ -12,6 +12,7 @@ var StickyApp = (function () {'use strict'
         ordering = [['sorted', 'relative'], ['free', 'absolute']],
         selectedTile,
         sidebar = document.getElementById('sidebar'),
+        splash = document.getElementById('splash'),
         tiles = [],
         toggleView,
         topZ = 0,
@@ -159,7 +160,7 @@ var StickyApp = (function () {'use strict'
     };
 
     function getTile(el) {
-        for (var i = tiles.length - 1; i >= 0; i--) {
+        for (var i = 0; i < tiles.length; i++) {
             if (tiles[i].tile === el) {
                 return tiles[i];
             }
@@ -214,7 +215,6 @@ var StickyApp = (function () {'use strict'
             dueDate.value = (typeof selectedTile.date !== 'undefined') ? selectedTile.date : '';
             dueDate.disabled = false;
             txtSidebarTitle.focus();
-
             txtSidebarTitle.setSelectionRange(0, txtSidebarTitle.value.length);
         }
     }
@@ -333,25 +333,9 @@ var StickyApp = (function () {'use strict'
     function onKeyDown(e) {
         captured = isTouchEnabled ? e.touches[0].target : e.target;
         var k = e.keyCode;
-        if (captured === txtSidebarText) {
-            switch (k) {
-                case 9:
-                    if (!e.shiftKey) {
-                        e.preventDefault();
-                        if (selectedTile.tile.nextSibling) {
-                            selectTile(selectedTile.tile.nextSibling);
-                        } else {
-                            selectTile(tiles[0].tile);
-                        }
-                        saveTiles();
-                    }
-                break;
-            }
-        }
-
-        if (captured === txtSidebarTitle) {
-            switch (k) {
-                case 9:
+        switch (k) {
+            case 9:
+                if (captured === txtSidebarTitle) {
                     if (e.shiftKey) {
                         e.preventDefault();
                         if (selectedTile.tile.previousSibling) {
@@ -359,15 +343,36 @@ var StickyApp = (function () {'use strict'
                         } else {
                             selectTile(tiles[tiles.length - 1].tile);
                         }
-                        saveTiles();
                     }
+                    saveTiles();
                     break;
-            }
+                }
+                
+                if (captured === txtSidebarText) {
+                    if (!e.shiftKey) {
+                        e.preventDefault();
+                        if (selectedTile.tile.nextSibling) {
+                            selectTile(selectedTile.tile.nextSibling);
+                        } else {
+                            selectTile(tiles[0].tile);
+                        }
+                    }
+                    saveTiles();
+                    break;
+                }
+                
+            default:
         }
+
     }
 
     function onClick(e) {
         captured = isTouchEnabled ? e.touches[0].target : e.target;
+
+        if (captured.className.indexOf('splash') > -1) {
+            workspace.parentNode.removeChild(splash);
+        }
+
         if (captured.className.indexOf('note') !== -1) {
             selectTile(captured.parentNode);
         }
@@ -376,9 +381,10 @@ var StickyApp = (function () {'use strict'
             ordering.push(ordering.shift());
             setPosition();
             captured.className = 'button view ' + ordering[1][0];
+            saveTiles();
         }
 
-        if (captured.className === 'btn-close') {
+        if (captured.className.indexOf('btn-close') > -1) {
             removeTile(captured.parentNode);
             saveTiles();
         }
@@ -394,7 +400,9 @@ var StickyApp = (function () {'use strict'
 
         if (captured === workspace) {
             deselectTile();
+            saveTiles();
         }
+
     }
 
 
@@ -438,17 +446,30 @@ var StickyApp = (function () {'use strict'
                 }
             });
         
-        if (localStorage) {
+        if (localStorage.length > 0) {
+            
+            workspace.parentNode.removeChild(splash);
+
             for(var i = 0; i < localStorage.length; i++) {
+                if(localStorage.hasOwnProperty('tile_' + i)) {
                     addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
+                }
             }
             if (localStorage.hasOwnProperty('ordering')) {
                 ordering = JSON.parse(localStorage.getItem('ordering'));
                 setPosition();
             }
+        } else {
+            splash.style.display = 'block';
+            splash.childNodes[1].style.left = (window.innerWidth - splash.childNodes[1].clientWidth) / 2 + 'px';
+            splash.childNodes[1].style.top = (window.innerHeight - splash.childNodes[1].clientHeight) / 2 + 'px';
         }
 
         deselectTile();
+
+        /* For Sticky Note Splash */
+
+
     }
 
     init();
