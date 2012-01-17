@@ -6,27 +6,27 @@
 		padding: 0;
 		font-family: Helvetica, Arial, sans-serif;
 		display: table;
+		overflow: hidden;
 	}
 	
 	.container {
 		display: table-cell;
 		width: 100%;
 		height: 100%;
-		overflow: auto;
 	}
 
 		.workspace {
 			box-sizing: border-box;
 			display: table-cell;
 			z-index: 1;
-			margin-left: 20px;
+			padding-left: 20px;
+			overflow-y: scroll;
 			position: fixed;
 		}
 
 		.sidebar {
 			display: table-cell;
 			position: absolute;
-			padding: 15px;
 		}
 
 			.titlebox {
@@ -49,6 +49,7 @@
 			.titlebox:focus {
 				box-shadow: inset 0 -1px 3px #000000, 0 1px 1px #000000;
 				outline: none;
+				color: #454545;
 				background-color: #FFFFFF;
 				box-shadow: 
 			}
@@ -73,7 +74,7 @@
 
 /* Begin Tooltip */
 
-.tooltip {
+.tooltip, .ui-icon {
 	background: -webkit-linear-gradient(top,  #0e0e0e 0%,#1f1f1f 16%,#1f1f1f 84%,#0e0e0e 100%) #0e0e0e;
 	display: inline-block;
 	visibility: hidden;
@@ -91,7 +92,7 @@
 	color: #FFFFFF;
 }
 
-	.tooltip:before, .tooltip:after {
+	.tooltip:before, .ui-icon:before, .ui-icon:after, .tooltip:after {
 		content: '';
 		position: absolute;
 		display: inline-block;
@@ -99,7 +100,7 @@
 		top: 0;
 	}
 
-	.tooltip:before {
+	.tooltip:before, .ui-icon:before {
 		width: 14px;
 	}
 
@@ -108,18 +109,18 @@
 		margin-left: 24px;
 	}
 
-		.tooltip.right:before {
+		.tooltip.right, .ui-datepicker-prev .ui-icon:before {
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUBAMAAABPKxEfAAAAA3NCSVQICAjb4U/gAAAAKlBMVEX///8ICAgICAggICAeHh4cHBwaGhoXFxcWFhYUFBQSEhIQEBAODg4MDAw/GDI9AAAADnRSTlMAmar//////////////12E84sAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS83LzEyd8AaIgAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAF5JREFUCJljYAACxjtnQBSDzK6VYO7p6Wlg7s5UZzB3mrMxmJtibAzlGkO5xgyMt0FcYwbZ063GIFoXSjNBxRl0IOoYmKD6IAIMUAEGsADYHqAAxF4GHYg7GJjunAEAYMgk6LTnH5AAAAAASUVORK5CYII=) 0 0 no-repeat transparent;
 			left: -14px;
 		}
 
-		.tooltip.right:after {
+		.tooltip.right, .ui-datepicker-prev .ui-icon:after {
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAUCAMAAAB2ztfUAAAAA3NCSVQICAjb4U/gAAAAQlBMVEX///8AAAADAwMGBgYGBgYGBgYKCgoHBwcKCgoMDAwODg4MDAwhISEeHh4aGhoYGBgWFhYUFBQSEhIQEBAODg4MDAxB2g82AAAAFnRSTlMAETNEVWaIiJnM7u7/////////////+qOLYAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAASUlEQVQImYXOSQKAMAgDwLivpSL0/1/VWnKWy1wgBP5OOUao3uZlgUhW8wkpyWV7h7O6oqreNzc053D4kXu8i5wvl3/4lz2i1wMLeAZ9zYUrCAAAAABJRU5ErkJggg==) 0 0 no-repeat transparent;
 			left: 100%;
 			width: 7px;
 		}
 
-		.button:hover .tooltip.right {
+		.button:hover .tooltip.right, .ui-datepicker-prev .ui-icon {
 			visibility: visible;
 			margin-left: 14px;
 			opacity: 1;
@@ -130,18 +131,18 @@
 		margin-right: 24px;
 	}
 
-		.tooltip.left:before {
+		.tooltip.left:before, .ui-datepicker-next .ui-icon:before {
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUBAMAAABPKxEfAAAAA3NCSVQICAjb4U/gAAAAJ1BMVEX///8ICAggICAeHh4cHBwaGhoXFxcWFhYUFBQSEhIQEBAODg4MDAyJwjVKAAAADXRSTlMAmf//////////////6muIRQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAATElEQVQImWPYvUeAAQQ6Z20E06EZq8ECyq5dYAEl5QiwgJKSKVhACSqgBBVQAgmsEQDRSu6rDyLTMHGoOpg+qDlQc2H2wOyFuQPqLgB5jiFVL/XSuwAAAABJRU5ErkJggg==) 0 0 no-repeat transparent;
 			right: -14px;
 		}
 
-		.tooltip.left:after {
+		.tooltip.left:after, .ui-datepicker-next .ui-icon:after {
 			background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAUCAMAAAB2ztfUAAAAA3NCSVQICAjb4U/gAAAAQlBMVEX///8AAAADAwMGBgYGBgYGBgYKCgoHBwcKCgoMDAwODg4MDAwhISEeHh4aGhoYGBgWFhYUFBQSEhIQEBAODg4MDAxB2g82AAAAFnRSTlMAETNEVWaIiJnM7u7/////////////+qOLYAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAS0lEQVQImYXOuxaAIAwD0CCC+KBaW/7/V0VPOzDZ5U5Ngnlv2g9LU7mZkVT4JELY5KJagfJ6AJPyJ1Yzm/HHPP55juV6j/f6Dtv1AAOEBn2jO0mbAAAAAElFTkSuQmCC) 0 0 no-repeat transparent;
 			right: 100%;
 			width: 7px;
 		}
 
-		.button:hover .tooltip.left {
+		.button:hover .tooltip.left, .ui-icon {
 			visibility: visible;
 			margin-right: 14px;
 			opacity: 1;
@@ -150,6 +151,35 @@
 		.button:hover .tooltip:hover {
 			visibility: hidden;
 			opacity: 0;
+		}
+
+		.ui-datepicker {
+			background-color: #111111;
+			box-shadow: inset 0 -2px 3px #000000;
+			padding: 0 10px;
+			border-radius: 10px;
+			margin: 10px 0 0 -13px;
+		}
+
+		.ui-icon {
+			position: relative;
+			margin: 0 10px 10px !important;
+		}
+
+		.ui-datepicker-next {
+			float: right;
+		}
+
+		.ui-icon:hover {
+			cursor: pointer;
+		}
+
+		.ui-datepicker-title, .ui-datepicker-calendar th span, .ui-datepicker-calendar td a {
+			color: #DEDEDE;
+			font-weight: normal;
+			text-shadow: 0px 1px 1px #000000;
+			text-align: center;
+			text-decoration: none;
 		}
 
 /* End Tooltip */
@@ -211,10 +241,10 @@
 				cursor: pointer;
 				display: none;
 				height: 27px;
-				left: -15px;
+				left: -12px;
 				opacity: 0;
 				position: absolute;
-				top: 0;
+				top: 5px;
 				width: 26px;
 				z-index: 4;
 			}
@@ -267,10 +297,17 @@
 			padding: 0 10px;
 			vertical-align: top;
 			margin: 0;
-			overflow: scroll;
 			border: none;
 			max-height: 200px;
 		}
+
+		.datebox:focus {
+				outline: none;
+		}
+
+			.ui-datepicker {
+				margin-top: 10px;
+			}
 
 		.clock {
 			background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAALVBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7t1ws2gAAAAD3RSTlMAIjNEVWZ3iJmqu8zd7v+ygrndAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTcvMTLoumiaAAAAjElEQVQYlWNgoAVgmfvupgOCy7zu3bt3rwzg/Lx3IPAMxmUDcs4AcQKUbwdkhwLxYygfpDsNZALU8HdQ/juIFVxw/gIwnxfETAcRF8B8PhAz6RyQeIDgT2TuhfHB6t8uZvSGqgeb9+7dcQ2oeSzvYMAB4Z53CPeA3fsOyb1sUD7MP+j+xQgP9PCiIgAAOtiII4yTDsYAAAAASUVORK5CYII=);
@@ -325,14 +362,14 @@
 
 	.workspace {
 		display: table-row;
-		bottom: 30%;
+		bottom: 40%;
 		top: 0;
 		left: 0;
 		right: 0;
 		border: none;
+		position: fixed;
 		width: 100%;
-		height: 70%;
-		overflow: scroll;
+		height: 60%;
 	}
 
 		.tile {
@@ -342,14 +379,14 @@
 
 	.sidebar {
 		display: fixed;
-		top: 70%;
+		top: 60%;
 		left: 0;
 		right: 0;
 		bottom: 0;
 		display: table-row;
 		box-shadow: 0 0 20px #000000;
 		z-index: 10;
-		height: 30%;
+		height: 40%;
 		width: 100%;
 	}
 
@@ -361,7 +398,7 @@
 			border: none;
 			position: absolute;
 			display: block;
-			top: 40px;
+			top: 100px;
 			left: 0;
 			right: 0;
 			bottom: 0;
@@ -369,12 +406,16 @@
 			margin: 0;
 		}
 
+		.due {
+			display: none;
+		}
+
 }
 
 @media all and (min-width: 800px) {
 
 	.workspace {
-		width: 60%;
+		width: 65%;
 		height: 100%;
 	}
 
@@ -385,7 +426,6 @@
 
 	.sidebar {
 		width: 30%;
-		min-width: 306px;
 		height: 100%;
 		padding: 15px;
 		right: 0;

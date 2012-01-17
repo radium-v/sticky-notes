@@ -169,10 +169,10 @@ var StickyApp = (function () {'use strict'
     function saveTiles() {
         var str;
         localStorage.clear();
-        for(var i = tiles.length - 1; i >= 0; i--) {
+        for(var i = 0; i < tiles.length; i++) {
             str = {
                 'id' : tiles[i].id,
-                'date' : tiles[i].date,
+                'date' : (typeof tiles[i].date !== undefined) ? tiles[i].date : '',
                 'left' : tiles[i].left,
                 'text' : tiles[i].text,
                 'tilt' : tiles[i].tilt,
@@ -211,6 +211,7 @@ var StickyApp = (function () {'use strict'
             txtSidebarText.setAttribute('contenteditable', 'true');
             txtSidebarTitle.value = selectedTile.title;
             txtSidebarTitle.disabled = false;
+            dueDate.value = (typeof selectedTile.date !== 'undefined') ? selectedTile.date : '';
             dueDate.disabled = false;
             txtSidebarTitle.focus();
 
@@ -234,6 +235,7 @@ var StickyApp = (function () {'use strict'
             $(workspace).sortable('enable');
         } else {
             $(workspace).sortable('disable');
+            enforceBounds();
         }
     }
 
@@ -427,19 +429,18 @@ var StickyApp = (function () {'use strict'
                 }
             }).sortable('disable');
 
-            $.datepicker.formatDate('yy-mm-dd', new Date());
             $(dueDate).datepicker({
+                dateFormat: 'yy-mm-dd',
+                minDate: new Date(),
                 onSelect: function(dateText) {
-                    console.log(dateText);
+                    selectedTile.date = dateText;
+                    saveTiles();
                 }
             });
         
-
         if (localStorage) {
             for(var i = 0; i < localStorage.length; i++) {
-                if (localStorage.hasOwnProperty('tile_' + i)) {
                     addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
-                }
             }
             if (localStorage.hasOwnProperty('ordering')) {
                 ordering = JSON.parse(localStorage.getItem('ordering'));
