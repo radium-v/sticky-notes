@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<title>Stickies</title>
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Short+Stack" media="all">
-	<link rel="icon" href="favicon.ico" />
+	<link rel="icon" href="/favicon.ico" />
 	<link rel="stylesheet" type="text/css" href="css/media.css" media="all" />
 	<script type="text/javascript" src="js/jquery-1.7.1.min.js"></script>
-	<script type="text/javascript" src="js/jquery-ui-1.8.17.custom.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.8.16.custom.min.js"></script>
 	<script type="text/javascript" src="js/Math.uuid.js"></script>
 </head>
 <body>
@@ -22,16 +22,8 @@
 				<div class="button savenotes" id="note_save"><span class="tooltip left">save notes</span></div>
 				<div id="view" class="button view free"><span class="tooltip left">Sorted/Free</span></div>
 			</div>
-			<input type="text" class="titlebox" id="title">
-			<div class="textbox" contenteditable="false" id="textbox">Welcome! Click the plus button in the upper-left corner to create a new note.</div>
-
-			<div class="due">
-				<label for="due_date">
-					<div class="button clock"><span class="tooltip right">Set a due date</span></div>
-				</label>
-				<input class="datebox" id="due_date" name="due_date" type="text" placeholder="Add a due date" />
-			</div>
-
+			<input type="text" class="title" id="title">
+			<div class="textbox box" contenteditable="false" id="textbox">Welcome! Click the plus button in the upper-left corner to create a new note.</div>
 			<div id="box_info" class="box info">
 				Hello, world!
 			</div>

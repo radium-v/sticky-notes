@@ -1,10 +1,11 @@
-var StickyApp = (function () {'use strict';
+var StickyApp = (function () {'use strict'
 
     var DEFAULT_APP_TITLE = '',
         captured,
         DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.',
         DEFAULT_TEXT = 'Hello, world! This is a note.',
         DEFAULT_TITLE = 'Untitled Note',
+        dueDate = document.getElementById('due_date'),
         isTouchEnabled = window.Touch || false,
         nH,
         nW,
@@ -29,7 +30,8 @@ var StickyApp = (function () {'use strict';
             self.tile.appendChild(self.tileBody);
             self.tile.appendChild(self.closeButton);
             self.tile.className = 'tile';
-            self.position = 'absolute';
+            self.position = ordering[0][1];
+
             if (args) {
                 for (key in args) {
                     if (args.hasOwnProperty(key)) {
@@ -43,8 +45,11 @@ var StickyApp = (function () {'use strict';
                 self.title = DEFAULT_TITLE;
                 self.top = Math.round((Math.random() * (window.innerHeight / 2)));
             }
-            self.z = ++topZ;
+
             self.tilt = 15;
+            self.z = ++topZ;
+
+
             return self;
         } else {
             return new Tile(arguments);
@@ -52,6 +57,14 @@ var StickyApp = (function () {'use strict';
     };
 
     Tile.prototype = {
+        get date() {
+            return this._date;
+        },
+
+        set date(value) {
+            this._date = value;
+        },
+
         get id() {
             return this._id;
         },
@@ -159,6 +172,7 @@ var StickyApp = (function () {'use strict';
         for(var i = tiles.length - 1; i >= 0; i--) {
             str = {
                 'id' : tiles[i].id,
+                'date' : tiles[i].date,
                 'left' : tiles[i].left,
                 'text' : tiles[i].text,
                 'tilt' : tiles[i].tilt,
@@ -179,6 +193,8 @@ var StickyApp = (function () {'use strict';
         txtSidebarTitle.value = DEFAULT_APP_TITLE;
         txtSidebarTitle.blur();
         txtSidebarTitle.disabled = true;
+        dueDate.disabled = true;
+        dueDate.value = ''
         txtSidebarText.innerText = DEFAULT_STARTER_TEXT;
         txtSidebarText.setAttribute('contenteditable', 'false');
     }
@@ -195,7 +211,10 @@ var StickyApp = (function () {'use strict';
             txtSidebarText.setAttribute('contenteditable', 'true');
             txtSidebarTitle.value = selectedTile.title;
             txtSidebarTitle.disabled = false;
+            dueDate.disabled = false;
             txtSidebarTitle.focus();
+
+            txtSidebarTitle.setSelectionRange(0, txtSidebarTitle.value.length);
         }
     }
 
@@ -213,10 +232,8 @@ var StickyApp = (function () {'use strict';
 
         if (ordering[0][0] === 'sorted') {
             $(workspace).sortable('enable');
-            console.log('ordered!');
         } else {
             $(workspace).sortable('disable');
-            console.log('Not ordered!');
         }
     }
 
@@ -409,6 +426,13 @@ var StickyApp = (function () {'use strict';
                     return sortTiles.apply(this, arguments);
                 }
             }).sortable('disable');
+
+            $.datepicker.formatDate('yy-mm-dd', new Date());
+            $(dueDate).datepicker({
+                onSelect: function(dateText) {
+                    console.log(dateText);
+                }
+            });
         
 
         if (localStorage) {
