@@ -1,0 +1,17 @@
+Sticky Notes - an HTML5 experiment.
+** Targeted for Chrome and Safari **
+I don't even know what would happen if you tried this in Internet Explorer. I don't recommend trying.
+
+This is a project I made to help me learn JavaScript. I wrote as many functions as I thought were reasonable to avoid using heavy JQuery.
+
+Future stuff:
+    Integration with Google Tasks API
+    Star/favorite notes
+    Sort between lists
+    Due Notifications
+    Note style customizations (resize, color, fonts, etc.)
+    Better delete handling (drag to trash icon?)
+
+Note: the file "htaccess" should be named ".htaccess" if deploying. It's for the font 
+
+~radium-v
