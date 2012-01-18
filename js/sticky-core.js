@@ -1,21 +1,13 @@
-var StickyApp = (function () {'use strict'
-
-    var DEFAULT_APP_TITLE = '',
-        captured,
-        DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button in the upper-right corner to create a new note.',
-        DEFAULT_TEXT = 'Hello, world! This is a note.',
+var StickyApp = (function () {
+    var DEFAULT_APP_TITLE = '', captured,
+        DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button to create a new note.',
         DEFAULT_TITLE = 'Untitled Note',
         dueDate = document.getElementById('due_date'),
-        isTouchEnabled = window.Touch || false,
-        nH,
-        nW,
-        ordering = [['sorted', 'relative'], ['free', 'absolute']],
-        selectedTile,
+        nH, nW,
+        ordering = [['sorted', 'relative'], ['free', 'absolute']], selectedTile,
         sidebar = document.getElementById('sidebar'),
         splash = document.getElementById('splash'),
-        tiles = [],
-        toggleView,
-        topZ = 0,
+        tiles = [], toggleView, topZ = 0,
         txtSidebarText = document.getElementById('textbox'),
         txtSidebarTitle = document.getElementById('title'),
         workspace = document.getElementById('workspace'),
@@ -32,7 +24,6 @@ var StickyApp = (function () {'use strict'
             self.tile.appendChild(self.closeButton);
             self.tile.className = 'tile';
             self.position = ordering[0][1];
-
             if (args) {
                 for (key in args) {
                     if (args.hasOwnProperty(key)) {
@@ -42,15 +33,12 @@ var StickyApp = (function () {'use strict'
             } else {
                 self.id = (Math.uuid(8));
                 self.left = Math.round((Math.random() * (window.innerWidth / 2)));
-                self.text = DEFAULT_TEXT;
+                self.text = '';
                 self.title = DEFAULT_TITLE;
                 self.top = Math.round((Math.random() * (window.innerHeight / 2)));
             }
-
             self.tilt = 15;
             self.z = ++topZ;
-
-
             return self;
         } else {
             return new Tile(arguments);
@@ -263,22 +251,15 @@ var StickyApp = (function () {'use strict'
     function onMouseMove(e) {
         var nX, nY;
         e.preventDefault();
-        if (isTouchEnabled) {
-            nX = e.touches[0].clientX - selectedTile.startX;
-            nY = e.touches[0].clientY - selectedTile.startY;
-            selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
-            selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
-        } else {
-            nX = e.clientX - selectedTile.startX;
-            nY = e.clientY - selectedTile.startY;
-            selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
-            selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
-        }
+        nX = e.clientX - selectedTile.startX;
+        nY = e.clientY - selectedTile.startY;
+        selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
+        selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
     }
 
     function enforceBounds() {
         if (ordering[0][0] === 'free') {
-            for (var i = tiles.length - 1; i >= 0; i--) {
+            for (var i = 0; i < tiles.length; i++) {
                     tiles[i].left = (tiles[i].left < 0) ? 0 : 
                         ((tiles[i].left > (workspace.clientWidth - tiles[i].width)) ? 
                         (workspace.clientWidth - tiles[i].width) : tiles[i].left);
@@ -290,37 +271,31 @@ var StickyApp = (function () {'use strict'
     }
 
     function onMouseUp(e) {
-        window.removeEventListener(isTouchEnabled ? 'touchmove' : 'mousemove', this.mouseMoveHandler, false);
-        window.removeEventListener(isTouchEnabled ? 'touchend' : 'mouseup', this.mouseUpHandler, false);
+        window.removeEventListener('mousemove', this.mouseMoveHandler, false);
+        window.removeEventListener('mouseup', this.mouseUpHandler, false);
         saveTiles();
     }
 
     function onMouseDown(e) {
-        captured = isTouchEnabled ? e.touches[0].target.parentNode : e.target.parentNode;
+        captured = e.target.parentNode;
         if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
             selectTile(captured);
-            selectedTile.startX = (isTouchEnabled ? e.touches[0].clientX : e.clientX) - selectedTile.tile.offsetLeft;
-            selectedTile.startY = (isTouchEnabled ? e.touches[0].clientY : e.clientY) - selectedTile.tile.offsetTop;
+            selectedTile.startX = e.clientX - selectedTile.tile.offsetLeft;
+            selectedTile.startY = e.clientY - selectedTile.tile.offsetTop;
             selectedTile.z = ++topZ;
             if (!(selectedTile.hasOwnProperty('mouseMoveHandler'))) {
                 selectedTile.mouseMoveHandler = function(e) { return onMouseMove.apply(selectedTile, arguments); };
                 selectedTile.mouseUpHandler = function(e) { return onMouseUp.apply(selectedTile, arguments); };
             }
 
-            if(!window.Touch) {
-                e.preventDefault();
-                window.addEventListener('mousemove', selectedTile.mouseMoveHandler, false);
-                window.addEventListener('mouseup', selectedTile.mouseUpHandler, false);
-            } else {
-                window.addEventListener('touchend', selectedTile.mouseUpHandler, false);
-                window.addEventListener('touchmove', selectedTile.mouseUpHandler, false);
-            }
+            e.preventDefault();
+            window.addEventListener('mousemove', selectedTile.mouseMoveHandler, false);
+            window.addEventListener('mouseup', selectedTile.mouseUpHandler, false);
         }
     }
     
     function onKeyUp(e) {
-        captured = isTouchEnabled ? e.touches[0].target : e.target;
-        var k = e.keyCode;
+        captured = e.target;
         if (captured === txtSidebarText && (txtSidebarText.getAttribute('contenteditable') === 'true')) {
             selectedTile.text = txtSidebarText.innerText;
         }
@@ -331,7 +306,7 @@ var StickyApp = (function () {'use strict'
     }
 
     function onKeyDown(e) {
-        captured = isTouchEnabled ? e.touches[0].target : e.target;
+        captured = e.target;
         var k = e.keyCode;
         switch (k) {
             case 9:
@@ -360,14 +335,13 @@ var StickyApp = (function () {'use strict'
                     saveTiles();
                     break;
                 }
-                
-            default:
+                break;
         }
 
     }
 
     function onClick(e) {
-        captured = isTouchEnabled ? e.touches[0].target : e.target;
+        captured = e.target;
 
         if (captured.className.indexOf('splash') > -1) {
             workspace.parentNode.removeChild(splash);
@@ -405,7 +379,6 @@ var StickyApp = (function () {'use strict'
 
     }
 
-
     function sortTiles(e, ui) {
         var arr = $(workspace).sortable('toArray'), dummy = [], i;
         for (var i = arr.length - 1; i >= 0; i--) {
@@ -417,61 +390,48 @@ var StickyApp = (function () {'use strict'
         tiles = dummy;
         saveTiles();
     }
-
-    function init() {
         
-        window.addEventListener('click', function (e) { return onClick(e); }, true);
-        window.addEventListener(isTouchEnabled ? 'touchstart' : 'mousedown', function(e) { return onMouseDown(e); }, true);
-        window.addEventListener('resize', function(e) { return enforceBounds(); }, false);
+    window.addEventListener('click', function (e) { return onClick(e); }, true);
+    window.addEventListener('mousedown', function(e) { return onMouseDown(e); }, true);
+    window.addEventListener('resize', function(e) { return enforceBounds(); }, false);
 
-        sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
-        sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
+    sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
+    sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
 
-            $(workspace).sortable({
-                items: '.tile',
-                revert: '140ms',
-                tolerance: 'pointer',
-                zIndex: '2000',
-                stop : function(e, ui) {
-                    return sortTiles.apply(this, arguments);
-                }
-            }).sortable('disable');
-
-            $(dueDate).datepicker({
-                dateFormat: 'yy-mm-dd',
-                minDate: new Date(),
-                onSelect: function(dateText) {
-                    selectedTile.date = dateText;
-                    saveTiles();
-                }
-            });
-        
-        if (localStorage.length > 0) {
-            
-            workspace.parentNode.removeChild(splash);
-
-            for(var i = 0; i < localStorage.length; i++) {
-                if(localStorage.hasOwnProperty('tile_' + i)) {
-                    addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
-                }
+        $(workspace).sortable({
+            items: '.tile',
+            revert: '140ms',
+            tolerance: 'pointer',
+            zIndex: '2000',
+            stop : function(e, ui) {
+                return sortTiles.apply(this, arguments);
             }
-            if (localStorage.hasOwnProperty('ordering')) {
-                ordering = JSON.parse(localStorage.getItem('ordering'));
-                setPosition();
+        }).sortable('disable');
+
+        $(dueDate).datepicker({
+            dateFormat: 'yy-mm-dd',
+            minDate: new Date(),
+            onSelect: function(dateText) {
+                selectedTile.date = dateText;
+                saveTiles();
             }
-        } else {
-            splash.style.display = 'block';
-            splash.childNodes[1].style.left = (window.innerWidth - splash.childNodes[1].clientWidth) / 2 + 'px';
-            splash.childNodes[1].style.top = (window.innerHeight - splash.childNodes[1].clientHeight) / 2 + 'px';
+        });
+    
+    if (localStorage.length > 0) {
+        workspace.parentNode.removeChild(splash);
+        for(var i = 0; i < localStorage.length; i++) {
+            if(localStorage.hasOwnProperty('tile_' + i)) {
+                addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
+            }
         }
-
-        deselectTile();
-
-        /* For Sticky Note Splash */
-
-
+        if (localStorage.hasOwnProperty('ordering')) {
+            ordering = JSON.parse(localStorage.getItem('ordering'));
+            setPosition();
+        }
+    } else {
+        splash.style.display = 'block';
+        splash.childNodes[1].style.left = (window.innerWidth - splash.childNodes[1].clientWidth) / 2 + 'px';
+        splash.childNodes[1].style.top = (window.innerHeight - splash.childNodes[1].clientHeight) / 2 + 'px';
     }
-
-    init();
-
+    deselectTile();
 }());

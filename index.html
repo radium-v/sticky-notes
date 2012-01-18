@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
@@ -12,13 +12,27 @@
 </head>
 <body>
 	<div class="container" id="container">
+
+		<div class="splash" id="splash">
+			<div class="splash-note">
+				<h1 class="splash-title">Sticky Notes</h1>
+				<p>An HTML5/CSS3/JS Experimental App<br />
+					Written by <a href="http://www.radium-v.com/" title="John Kreitlow">John Kreitlow</a></p>
+				<p>Notes are saved to HTML5 Local Storage.</p>
+				<a class="source" href="https://github.com/radium-v/sticky-notes" target="_blank">View Source</a>
+				<div class="require">Requires Google Chrome or Safari</div>
+				<div class="close-splash"></div>
+			</div>
+		</div>
+		
 		<div class="workspace" id="workspace"></div>
+
 		<div class="sidebar" id="sidebar">
 			<h1 class="site-title">Sticky Notes</h1>
 			<div class="btnpanel" id="sidepanel">
 				<div class="button newnote" id="new_note"><span class="tooltip left">new note</span></div>
-				<div class="button info" id="note_info"><span class="tooltip left ">info</span></div>
-				<!-- <div class="button star" id="note_favorite"><span class="tooltip left">star</span></div> -->
+				<!-- <div class="button info" id="note_info"><span class="tooltip left ">info</span></div>
+				<div class="button star" id="note_favorite"><span class="tooltip left">star</span></div> -->
 				<div class="button savenotes" id="note_save"><span class="tooltip left">save notes</span></div>
 				<div id="view" class="button view free"><span class="tooltip left">Sorted/Free</span></div>
 			</div>
@@ -30,21 +44,6 @@
 					<div class="button clock"><span class="tooltip left">Set a due date</span></div>
 				</label>
 				<input class="datebox" id="due_date" name="due_date" type="text" placeholder="Add a due date" />
-			</div>
-
-			<div id="box_info" class="box info">
-				Hello, world!
-			</div>
-		</div>
-		<div class="splash" id="splash">
-			<div class="splash-note">
-				<h1 class="splash-title">Sticky Notes</h1>
-				<p>An HTML5/CSS3/JS Experimental App<br />
-					Written by <a href="http://www.radium-v.com/" title="John Kreitlow">John Kreitlow</a></p>
-				<p>Notes are saved to HTML5 Local Storage!</p>
-				<a class="source" href="#">View Source</a>
-				<div class="require">Requires Google Chrome or Safari</div>
-				<div class="close-splash"></div>
 			</div>
 		</div>
 	</div>
