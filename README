@@ -12,6 +12,6 @@ Future stuff:
     Note style customizations (resize, color, fonts, etc.)
     Better delete handling (drag to trash icon?)
 
-Note: the file "htaccess" should be named ".htaccess" if deploying. It's for the font 
+Note: the file "htaccess" should be named ".htaccess" if deploying.
 
 ~radium-v
