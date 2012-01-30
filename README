@@ -20,14 +20,6 @@ Update (1/30/2012):
         Make notes resizable
         Fix persistent sidebar tooltips
 
-Future stuff:
-    Integration with Google Tasks API
-    Star/favorite notes
-    Sort between lists
-    Due Notifications
-    Note style customizations (resize, color, fonts, etc.)
-    Better delete handling (drag to trash icon?)
-
 Note: the file "htaccess" should be named ".htaccess" if deploying.
 
 ~radium-v
