@@ -3,6 +3,10 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="description" content="Sticky Notes. An HTML5/CSS3/JS Experimental App. Notes are saved to HTML5 Local Storage. Requires Google Chrome or Safari.">
+	<meta property="og:description" content="Sticky Notes. An HTML5/CSS3/JS Experimental App. Notes are saved to HTML5 Local Storage. Requires Google Chrome or Safari.">
+	<meta property="og:url" content="http://www.radium-v.com/notes/">
+	<meta property="og:title" content="Sticky Notes">
+	<meta property="og:image" content="http://www.radium-v.com/notes/img/icon.png">
 	<title>Stickies</title>
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Short+Stack" media="all">
 	<link rel="icon" href="favicon.ico" />
@@ -26,7 +30,10 @@
 			</div>
 		</div>
 		
-		<div class="workspace" id="workspace"></div>
+		<div class="workspace" id="workspace">
+			
+			<div id="trash" class="button trash closed"><span class="tooltip right">Drag a note here to throw it away</span></div>
+		</div>
 
 		<div class="sidebar" id="sidebar">
 			<h1 class="site-title">Sticky Notes</h1>
@@ -34,20 +41,29 @@
 				<div class="button newnote" id="new_note"><span class="tooltip left">new note</span></div>
 				<!-- <div class="button info" id="note_info"><span class="tooltip left ">info</span></div>
 				<div class="button star" id="note_favorite"><span class="tooltip left">star</span></div> -->
-				<div class="button savenotes" id="note_save"><span class="tooltip left">save notes</span></div>
-				<div id="view" class="button view free"><span class="tooltip left">Sorted/Free</span></div>
+				<!-- <div class="button savenotes" id="note_save"><span class="tooltip left">save notes</span></div> -->
+				<!-- <div id="view" class="button view free"><span class="tooltip left">Sorted/Free</span></div> -->
 			</div>
-			<input type="text" class="titlebox" id="title">
-			<div class="textbox" contenteditable="false" id="textbox">Welcome! Click the plus button in the upper-left corner to create a new note.</div>
-
-			<div class="due">
-				<label for="due_date">
-					<div class="button clock"><span class="tooltip left">Set a due date</span></div>
+			<form class="note-form" method="get" id="note-form" accept-charset="utf-8">
+				<label for="titlebox">
+					<input class="titlebox" disabled="true" id="titlebox" name="title" type="text" />
+					<span class="tooltip left">Press tab to type in this note.</span>
 				</label>
-				<input class="datebox" id="due_date" name="due_date" type="text" placeholder="Add a due date" />
-			</div>
+				<label for="textbox">
+					<textarea class="textbox" id="textbox" name="textbox" disabled="true"></textarea>
+					<span class="tooltip left">Press tab again to go to the next note.</span>
+				</label>
+				<div class="due">
+					<label for="due_date">
+						<div class="button clock"><span class="tooltip left">Set a due date</span></div>
+					<input class="datebox" disabled="true" id="due_date" name="due_date" type="text" />
+					</label>
+				</div>
+				<div class="colorpicker" id="colorpicker"><div class="color-box color-01"></div><div class="color-box color-02"></div><div class="color-box color-03"></div><div class="color-box color-04"></div><div class="color-box color-05"></div><div class="color-box color-06"></div><div class="color-box color-07"></div><div class="color-box color-08"></div></div>
+			</form>
 		</div>
 	</div>
+	<audio id="trash_sound" src="assets/trash.ogg"></audio>
 	<script type="text/javascript" src="js/sticky-core.js"></script>
 </body>
 </html>

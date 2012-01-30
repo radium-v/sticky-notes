@@ -18,6 +18,7 @@
 
 	body {
 		/* I turn away from the mic to breathe in */
+		-webkit-user-select: none;
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAMBAMAAACpRTGTAAAAA3NCSVQICAjb4U/gAAAAIVBMVEX///88PDw6Ojo4ODgzMzMwMDAuLi4mJiYkJCQiIiIgICDUErVSAAAAC3RSTlMA/////////////312fdUAAAAJcEhZcwAACusAAArrAYKLDVoAAAAedEVYdFNvZnR3YXJlAEFkb2JlIEZpcmV3b3JrcyBDUzUuMasfSOsAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS85LzEylx9tEQAAAEtJREFUCJljCC0FQoZQ9XJTIBmsFBrKMC0kNHQmg2ZoSKQhg4draEQqQ3iqa3goQ3FoaFA5g2qoa6gyQ1jkLKDK0ElCU4Fka2irKwDYFxScmOVGwgAAAABJRU5ErkJggg==) repeat #171A22;
 		display: table;
 		font-family: Helvetica, Arial, sans-serif;
@@ -34,6 +35,7 @@
 
 	.container {
 		display: table-cell;
+		display: fixed;
 		height: 100%;
 		width: 100%
 	}
@@ -118,6 +120,10 @@
 	z-index: 10000
 }
 
+.ui-icon {
+	visibility: visible
+}
+
 	.tooltip:before, .ui-icon:before, .ui-icon:after, .tooltip:after {
 		content: '';
 		display: inline-block;
@@ -135,18 +141,19 @@
 		margin-left: 24px
 	}
 
-		.tooltip.right, .ui-datepicker-prev .ui-icon:before {
+		.tooltip.right:before, .ui-datepicker-prev .ui-icon:before {
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAUBAMAAABPKxEfAAAAA3NCSVQICAjb4U/gAAAAKlBMVEX///8ICAgICAggICAeHh4cHBwaGhoXFxcWFhYUFBQSEhIQEBAODg4MDAw/GDI9AAAADnRSTlMAmar//////////////12E84sAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAUdEVYdENyZWF0aW9uIFRpbWUAMS83LzEyd8AaIgAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAF5JREFUCJljYAACxjtnQBSDzK6VYO7p6Wlg7s5UZzB3mrMxmJtibAzlGkO5xgyMt0FcYwbZ063GIFoXSjNBxRl0IOoYmKD6IAIMUAEGsADYHqAAxF4GHYg7GJjunAEAYMgk6LTnH5AAAAAASUVORK5CYII=) 0 0 no-repeat transparent;
 			left: -14px
 		}
 
-		.tooltip.right, .ui-datepicker-prev .ui-icon:after {
+		.tooltip.right:after, .ui-datepicker-prev .ui-icon:after {
 			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAUCAMAAAB2ztfUAAAAA3NCSVQICAjb4U/gAAAAQlBMVEX///8AAAADAwMGBgYGBgYGBgYKCgoHBwcKCgoMDAwODg4MDAwhISEeHh4aGhoYGBgWFhYUFBQSEhIQEBAODg4MDAxB2g82AAAAFnRSTlMAETNEVWaIiJnM7u7/////////////+qOLYAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAASUlEQVQImYXOSQKAMAgDwLivpSL0/1/VWnKWy1wgBP5OOUao3uZlgUhW8wkpyWV7h7O6oqreNzc053D4kXu8i5wvl3/4lz2i1wMLeAZ9zYUrCAAAAABJRU5ErkJggg==) 0 0 no-repeat transparent;
 			left: 100%;
 			width: 7px
 		}
 
-		.button:hover .tooltip, .ui-icon {
+		.button:hover .tooltip, label > input:focus + .tooltip,
+		label > textarea:focus + .tooltip {
 			opacity: 1;
 			visibility: visible
 		}
@@ -169,11 +176,18 @@
 			width: 7px
 		}
 
-		.button:hover .tooltip.left { margin-right: 14px; }
+		.button:hover .tooltip.left { 
+			margin-right: 14px;
+		}
+
+		label > input:focus + .tooltip.left,
+		label > textarea:focus + .tooltip.left {
+			top: 15px;
+		}
 
 		.button:hover .tooltip:hover {
 			opacity: 0;
-			visibility: hidden
+			visibility: hidden;
 		}
 
 		.ui-datepicker {
@@ -205,12 +219,14 @@
 		position: relative;
 		text-align: left;
 		vertical-align: top;
+		box-sizing: border-box;
 		z-index: 2
 	}
 
 	.tile:hover, .sel {
 		-webkit-transform: rotateX(0deg) !important;
 		-webkit-transition: -webkit-transform 0.24s linear forwards;
+		cursor: pointer;
 		z-index: 10000 !important
 	}
 
@@ -219,22 +235,47 @@
 		box-shadow: 0 0 15px 2px #006699
 	}
 
+
 		.note {
-			-webkit-animation: blur 0.17s ease-out forwards;
+			-webkit-animation: blur 0.17s linear forwards;
+			-webkit-transition: background-color 0.4s linear;
 			-webkit-opacity: 0.4;
-			-webkit-user-select: none;
-			background-color: #FFFFCC;
-			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(220, 220, 240, 0.8); 
+			background-color: #F7F5C1;
+			box-shadow: 0 8px 15px 5px rgba(0, 0, 0, 0.8);
 			cursor: pointer;
 			display: block;
-			font: 14px/20px 'Short Stack', Helvetica, Arial, sans-serif;
-			height: 98%;
+			height: 100%;
 			overflow: hidden;
-			padding: 2%;
-			white-space: normal
+			margin: 0;
+			white-space: normal;
 		}
 
-			.tile:hover .note, .sel .note { -webkit-animation: focus 0.14s linear forwards }
+			.note .title {
+				border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+				height: 20px;
+				color: #343434;
+				width: 100%;
+				padding-left: 4px;
+				background-color: rgba(0, 0, 0, 0.12);
+				font: 13px/21px 'Short Stack', Helvetica, Arial, sans-serif;
+				white-space: nowrap;
+				word-wrap: pre;
+				overflow: hidden;
+			}
+
+			.note .body {
+				margin: 0;
+				padding: 10px;
+				display: block;
+				height: 100%;
+				font: 14px/20px 'Short Stack', Helvetica, Arial, sans-serif;
+				word-wrap: break-word;
+				white-space: pre-wrap;
+			}
+
+			.tile:hover .note, .sel .note { 
+				-webkit-animation: focus 0.17s linear forwards;
+			}
 
 			.btn-close, .close-splash {
 				-webkit-transition: opacity 0.07s ease-in-out 0.14s;
@@ -270,6 +311,16 @@
 			position: absolute
 		}
 
+			.sidebar .note-form {
+				width: 100%;
+			}
+
+			label, textarea {
+				outline: none;
+				position: relative;
+				display: block;
+			}
+
 			.btnpanel {
 				cursor: pointer;
 				display: block;
@@ -281,37 +332,41 @@
 
 			.titlebox {
 				-webkit-transition: all 0.14s linear;
-				background-color: transparent;
+				background-color: rgba(255, 255, 255, 0.2);
 				border-radius: 15px;
 				border: none;
 				box-sizing: border-box;
 				color: #FFFFFF;
-				display: block;
+				display: inline-block;
 				font-weight: 300;
-				height: 30px;
+				line-height: 30px;
 				margin: 10px 0px;
 				padding-left: 10px;
 				text-shadow: 0 1px 1px #000000;
-				width: 50%
+				width: 90%
 			}
 
 				.titlebox:focus {
 					background-color: #FFFFFF;
 					box-shadow: inset 0 -1px 3px #000000, 0 1px 1px #000000;
 					color: #454545;
-					outline: none
+					outline: none;
+					text-shadow: none
 				}
 
 			.textbox {
+				-webkit-user-select: text;
 				-webkit-transition: all 0.14s linear;
-				background-color: #111111;
 				border-radius: 20px;
 				box-sizing: border-box;
+				background-color: rgba(255, 255, 255, 0.2);
+				border: 1px solid rgba(0, 0, 0, 0.2);
 				color: #FFFFFF;
 				font-size: 13px;
 				line-height: 21px;
-				margin: 0 0 10px 0;
+				margin: 10px 0;
 				min-height: 117px;
+				outline: none;
 				overflow-y: auto;
 				padding: 10px 15px;
 				text-shadow: 0 1px 1px #000000;
@@ -320,9 +375,9 @@
 
 				.textbox:focus {
 					background-color: #FFFFFF;
+					border: none;
 					box-shadow: inset 0 -1px 3px #000000, 0 1px 1px #000000;
 					color: #333333;
-					outline: none;
 					text-shadow: none
 				}
 
@@ -336,15 +391,20 @@
 				}
 
 		.due {
-			border-top: 1px solid #BBBBBB;
-			padding-top: 10px
+			display: inline-block;
+			vertical-align: top;
 		}
 
-			.datebox {
-				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#101010), color-stop(14%,#1a1a1a), color-stop(21%,#1a1a1a), color-stop(100%,#010101)) 0 0 no-repeat transparent;
+			.datebox:disabled {
+				display: none;
+			}
+
+			.datebox:enabled {
+				background-color: transparent;
+				/*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#101010), color-stop(14%,#1a1a1a), color-stop(21%,#1a1a1a), color-stop(100%,#010101)) 0 0 no-repeat transparent;*/
 				border-radius: 10px;
 				border: none;
-				box-shadow: inset 0 -1px 3px #000000, 0 1px 1px #000000;
+				/*box-shadow: inset 0 -1px 3px #000000, 0 1px 1px #000000;*/
 				color: #DEDEDE;
 				display: inline-block;
 				font-size: 13px;
@@ -355,9 +415,10 @@
 				vertical-align: top
 			}
 				.datebox:focus { outline: none }
+
 			.ui-datepicker { margin-top: 10px }
 
-		.button {
+			.button {
 				display: inline-block;
 				height: 30px;
 				position: relative;
@@ -366,19 +427,71 @@
 
 			.button:hover, .ui-icon:hover { cursor:pointer }
 		
-			.clock { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAALVBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7t1ws2gAAAAD3RSTlMAIjNEVWZ3iJmqu8zd7v+ygrndAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTcvMTLoumiaAAAAjElEQVQYlWNgoAVgmfvupgOCy7zu3bt3rwzg/Lx3IPAMxmUDcs4AcQKUbwdkhwLxYygfpDsNZALU8HdQ/juIFVxw/gIwnxfETAcRF8B8PhAz6RyQeIDgT2TuhfHB6t8uZvSGqgeb9+7dcQ2oeSzvYMAB4Z53CPeA3fsOyb1sUD7MP+j+xQgP9PCiIgAAOtiII4yTDsYAAAAASUVORK5CYII=) }
+			.clock {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAALVBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7t1ws2gAAAAD3RSTlMAIjNEVWZ3iJmqu8zd7v+ygrndAAAACXBIWXMAAAsSAAALEgHS3X78AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTcvMTLoumiaAAAAjElEQVQYlWNgoAVgmfvupgOCy7zu3bt3rwzg/Lx3IPAMxmUDcs4AcQKUbwdkhwLxYygfpDsNZALU8HdQ/juIFVxw/gIwnxfETAcRF8B8PhAz6RyQeIDgT2TuhfHB6t8uZvSGqgeb9+7dcQ2oeSzvYMAB4Z53CPeA3fsOyb1sUD7MP+j+xQgP9PCiIgAAOtiII4yTDsYAAAAASUVORK5CYII=);
+			}
 			.newnote { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzgvMTIvowp0AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAACAUlEQVRIie2WzWpTQRTHf1NEChHBJ1A3LgrZCC4KUgVzIi2+QNNShFKXXbupaezGdZeKIMXGF5DS5kSwVejKboQu3ESfQBADJZtxkXPbk9x7JX406aJ/GGbO5//O3Dnn3hBjZBQYGwnrOfEwcSFLGUJI6VS1AMwAS8Ad4KKZOsAu8ALYEpF2f2zWBQ6Zyj5iVb0PPAbu/mYTAO+BZyKy88/EqvoUWHHmDvAFODJ5HLjByQkArInIk78mVtUqsOpMr4CXIvLR+6vqbWAReOjUqyJS+2NiO95tUx0BSyLyOuXc+wDzdN/1uKmmRWR7YOJms1kAFJg0VUVE3jiC68CciZsi0nK2WaBu4j4gpVIpdeHyymnGkW54UkMRWLNR9Abz3TBx0nKlkEf8yOY2sJ5h/56zTrBusT5XDzLrGJiy+WuM8QCOj3fC9Lec7z1VvWzrQxFpxRgPQgjfzH+KDOTtOCmNdrlcTi5BBXhro+p8q05fAbCYn325BiI+deQRd2wuNBqNpJvUgQc2as635vR1AIu51JerB3nveA8oAddCCDeBT1YyLQBV/cHJcb8TkQ8+2GKuulwp5O34uc0FYDnDfiVnnWDZYn2ugYi36BY/wII1BY/PdPv3iq2PYb4LJu5brhTOVssc6UfCJR3+Z9GRD/9HwJGf/q/PMHDmWuY58X/HL/V99YaTt3b3AAAAAElFTkSuQmCC) }
 			.savenotes { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAJ1BMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7vARNh9AAAADXRSTlMAESIzRFVmd5nM3e7/zxu+qgAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAaUlEQVQYlWNgGDCQMwmFy7rnpAKK9JkzC5C4bGfOnDmAKn06AFV6M5QtMRUi7QDhMs05E4AszXXmzNEaoLQBlM9zBgxg0gzsYO4phGNiQPxFCLtY9qBIMzB4o0gzMDCvQfUKQwyKND0BAMviM7vK8Dw0AAAAAElFTkSuQmCC) }
 			.view { -webkit-transition: background-image 0.14s linear }
 				.view.free { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAAKdQAACnUBSiXd/QAAABV0RVh0Q3JlYXRpb24gVGltZQAxLzExLzEyzdE3RgAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAKFJREFUGJVjYKATMEsVQOHr/3+zowCJ3////38Yn/nWcob7QL4BhDf3//+/DEDub4gs2/v//3+xAPk/IHwmIPMvG5D4BtW+H8gP633//zOS0f8VVHsaofz430B+MsJqPZB87y+4CNsskMD/f3thAqxgPtARUMAEdMFfuP0QG4HgO5w//4YHkH8Qzldm4ALyFyB5l+nWvf8JKAHCHFvAQH0AACiHZiZeGsaJAAAAAElFTkSuQmCC); }
 				.view.sorted { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeAgMAAABGXkYxAAAAA3NCSVQICAjb4U/gAAAACVBMVEX///+7u7u7u7sxsbbzAAAAA3RSTlMAiP8kLjkQAAAACXBIWXMAAAsSAAALEgHS3X78AAAAFXRFWHRDcmVhdGlvbiBUaW1lADEvMTQvMTL6D8d0AAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAH0lEQVQYlWNgIAlIrXIAIiBDa1UDEJHKgGsfbHZBAQARCSgBQuMBjQAAAABJRU5ErkJggg==); }
 
-		/* For future implementations
-
 			.trash {
+				display: block;
+				height: 40px;
+				bottom: 20px;
+				position: absolute;
+				left: 20px;
+				width: 40px
+			}
+
+			.trash.closed {
+				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoAgMAAADxkFD+AAAAA3NCSVQICAjb4U/gAAAADFBMVEX///+7u7u7u7u7u7vUs5IIAAAABHRSTlMAiO7/sUodTQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABV0RVh0Q3JlYXRpb24gVGltZQAxLzIwLzEyMs0q8wAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAADJJREFUGJVjYKA2+I/J1P8PAj9ATHsw8w9uJhJgBoseIJ15+PDhQcok3heMYKYDrlAGAJ4DmjmIXQ/nAAAAAElFTkSuQmCC);
+			}
+
+			.trash.open {
 				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoBAMAAAB+0KVeAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAAKnAAACpwB9NLfEgAAABV0RVh0Q3JlYXRpb24gVGltZQAxLzEyLzEy32SYqAAAAB50RVh0U29mdHdhcmUAQWRvYmUgRmlyZXdvcmtzIENTNS4xqx9I6wAAAIpJREFUKJFjYKAYMC03xBRk//+nWYDBwgFFkPv//38vAvLfJCAL6v4Hgr/v/wcgCzJHvgMJ/5+sgGKASA9Y9GYiijCTxzmw8HEDFMXMWedBom8aUF0mNg8kugndEx77//9HUwkyI+c9zF38/+Hgo7oCpuAHuCbKBT/wg+CoIH5Bqoc8B0KwgYE0AAAR2BR6olbK1AAAAABJRU5ErkJggg==);
 			}
-			
+
+			/* Color Definitions */
+			.colorpicker {
+			    cursor: default;
+			    width: 50%;
+			    max-width: 64px;
+			    float: right;
+			    margin: 5px 0 0 5px;
+			    display: block;
+			}
+
+			.color-box {
+			    width: 16px;
+			    height: 16px;
+			    border: 1px solid #000000;
+			    box-sizing: border-box;
+			    display: inline-block;
+			    padding: 0;
+			    vertical-align: top;
+			    cursor: pointer;
+			}
+
+			.color-box:hover {
+			    -webkit-animation: border-pulse 0.73s ease-in-out infinite;
+			}
+
+			.color-box.sel {
+			    border: 1px solid #FFFFFF;
+			}
+
+			    .color-01 { background-color: #F7F5C1 }
+			    .color-02 { background-color: #FAE7C4 }
+			    .color-03 { background-color: #C8FFD6 }
+			    .color-04 { background-color: #F0C9E2 }
+			    .color-05 { background-color: #C1F5F1 }
+			    .color-06 { background-color: #EAD3F2 }
+			    .color-07 { background-color: #D4DDCD }
+			    .color-08 { background-color: #D2E1EC }
+
+		/* For future implementations
 			.info {
 				background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeBAMAAADJHrORAAAAA3NCSVQICAjb4U/gAAAAMFBMVEX///+7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u/joIeAAAAEHRSTlMAESIzRFVmd4iZqrvM3e7/dpUBFQAAAAlwSFlzAAALEgAACxIB0t1+/AAAABR0RVh0Q3JlYXRpb24gVGltZQAxLzcvMTJ3wBoiAAAAHnRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1LjGrH0jrAAAAb0lEQVQYlWNgoA1gXCWAwmf/vwGFz/X/Awqf9X8DqgEmqFx3BxQu5//PKPza91+RuSwX36PIczj/v4CinuP/AhQ+z/8EFL78fwUUvv9fVOf0/0Tln/9ihsxlfv/oKjKf9f+bBajyv1D1R6FaTz0AAHjxINNTpQf5AAAAAElFTkSuQmCC);
 				display: none;
@@ -417,7 +530,6 @@
 			border-radius: 0;
 			border: none;
 			bottom: 0;
-			display: block;
 			margin: 0;
 			position: absolute;
 			top: 100px;
@@ -469,12 +581,25 @@
 
 }
 
+@-webkit-keyframes blur {
+	from { -webkit-transform: scale(1) }
+	to { -webkit-transform: scale(0.8) }
+}
+
+@-webkit-keyframes border-pulse {
+    0% { border-color: rgba(0, 0, 0, 0); }
+    50% { border-color: rgba(0, 0, 0, 1); }
+    100% { border-color: rgba(0, 0, 0, 0); }
+}
+
 @-webkit-keyframes focus {
 	from { -webkit-transform: scale(0.8) }
 	to { -webkit-transform: scale(1) }
 }
 
-@-webkit-keyframes blur {
-	from { -webkit-transform: scale(1) }
-	to { -webkit-transform: scale(0.8) }
+@-webkit-keyframes shrink {
+	to {
+		-webkit-transform: scale(0.2) translate(-100%, 100%);
+		opacity: 0.4;
+	}
 }

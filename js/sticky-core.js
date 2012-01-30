@@ -1,437 +1,392 @@
-var StickyApp = (function () {
-    var DEFAULT_APP_TITLE = '', captured,
-        DEFAULT_STARTER_TEXT = 'Welcome! Click the plus button to create a new note.',
-        DEFAULT_TITLE = 'Untitled Note',
-        dueDate = document.getElementById('due_date'),
-        nH, nW,
-        ordering = [['sorted', 'relative'], ['free', 'absolute']], selectedTile,
-        sidebar = document.getElementById('sidebar'),
+var App = (function () {
+    var tiles = [],
+        currentTile,
         splash = document.getElementById('splash'),
-        tiles = [], toggleView, topZ = 0,
-        txtSidebarText = document.getElementById('textbox'),
-        txtSidebarTitle = document.getElementById('title'),
         workspace = document.getElementById('workspace'),
+        appForm = document.forms[0],
+        topZ = 0,
 
-    Tile = function(args) {
-        var self = this, key;
-        if (this instanceof Tile) {
-            self.tile = document.createElement('div');
-            self.tileBody = document.createElement('pre');
-            self.closeButton = document.createElement('div');
-            self.tileBody.className = 'note';
-            self.closeButton.className = 'btn-close';
-            self.tile.appendChild(self.tileBody);
-            self.tile.appendChild(self.closeButton);
-            self.tile.className = 'tile';
-            self.position = ordering[0][1];
-            if (args) {
-                for (key in args) {
-                    if (args.hasOwnProperty(key)) {
-                        self[key] = args[key];
+        trash = {
+            el: (function () {
+                return document.getElementById('trash');
+            }()),
+            playSound: function () {
+                var snd = document.getElementById('trash_sound');
+                snd.play();
+            },
+            open: function () { this.el.className = 'button trash open'; },
+            close: function () { this.el.className = 'button trash closed'; }
+        },
+
+        sidebar = {
+            el: (function () {
+                return document.getElementById('sidebar');
+            }()),
+
+            colorpicker: {
+                el: (function () {
+                    return document.getElementById('colorpicker');
+                }()),
+                setColor: function (el) {
+                    this.clearSelection();
+                    if (typeof el !== 'undefined') {
+                        tiles[currentTile].color(window.getComputedStyle(el).backgroundColor);
+                        el.className += ' sel';
+                    }
+                },
+                clearSelection: function () {
+                    var cbox = document.getElementsByClassName('color-box'), cArr,str;
+                    for (var i = cbox.length - 1; i >= 0; i--) {
+                        cArr = cbox[i].className.split(' ');
+                        str = '';
+                        for (var j = cArr.length - 1; j >= 0; j--) {
+                            if (cArr[j].indexOf('sel') === -1) {
+                                str += cArr[j] + ' ';
+                            }
+                        }
+                        cbox[i].className = str.trim();
+                    }
+                },
+                getColorFromTile: function (tile) {
+                    var cArr = this.el.childNodes;
+                    var nColor;
+                    for (var i = cArr.length - 1; i >= 0; i--) {
+                        nColor = window.getComputedStyle(cArr[i]).backgroundColor;
+                        if (tile.color() === nColor) {
+                            sidebar.colorpicker.setColor(cArr[i]);
+                        }
+                    }
+                },
+                onClick: function (e) {
+                    var captured = e.target;
+                    if (captured.className.indexOf('color-box') > -1) {
+                        sidebar.colorpicker.setColor(captured);
+                        window.setTimeout(saveNotes, 100, false);
                     }
                 }
+            },
+
+            clear: function () {
+                for (var i = appForm.elements.length - 1; i >= 0; i--) {
+                    appForm.elements[i].value = '';
+                    appForm.elements[i].disabled = true;
+                    appForm.elements[i].blur();
+                }
+            },
+
+            onClick: function (e) {
+                return (function () {
+                    var captured = e.target;
+                    if (captured.id === 'new_note') {
+                        createNewTile();
+                        saveNotes();
+                    }
+                })(e);
+            },
+
+            onKeyDown: function (e) {
+                var captured = e.target;
+                var k = e.keyCode;
+                if (k === 9) {
+                    if (captured === appForm.elements.textbox &&
+                        !e.shiftKey) {
+                        e.preventDefault();
+                        deselectTileElements();
+                        selectTileElement(tiles[currentTile < tiles.length - 1 ? currentTile + 1 : 0]);
+                    } else if (captured === appForm.elements.titlebox &&
+                        e.shiftKey) {
+                        e.preventDefault();
+                        deselectTileElements();
+                        selectTileElement(tiles[currentTile > 0 ? currentTile - 1 : tiles.length - 1]);
+                        appForm.elements.textbox.focus();
+                    }
+                }
+            },
+
+            onKeyUp: function (e) {
+                var captured = e.target,
+                    k = e.keyCode;
+                if (k !== 9) {
+                    if (captured === appForm.elements.titlebox) {
+                        tiles[currentTile].titleElement.innerText = captured.value;
+                    }
+                    if (captured === appForm.elements.textbox) {
+                        tiles[currentTile].bodyElement.innerText = captured.value;
+                    }
+                }
+            }
+        },
+
+        onClick = function (e) {
+            var captured, classArray;
+            captured = getTile(e.target, 'tile') || e.target;
+            if (captured === workspace || captured === sidebar) {
+                deselectTileElements();
+                sidebar.clear();
+                saveNotes();
+            }
+
+            if (captured.hasOwnProperty('className')) {
+                if (captured.className.indexOf('splash') > -1) {
+                    workspace.parentNode.removeChild(splash);
+                }
+            }
+        },
+
+        onMouseMove = function (e) {
+            /* this context: captured.tileElement */
+            var nX, nY, el;
+            el = this.tileElement;
+            nX = e.clientX - el.startX;
+            nY = e.clientY - el.startY;
+            this.setPos((((nX > 0) ? ((nX < nW) ? nX : nW) : 0)), (((nY > 0) ? ((nY < nH) ? nY : nH) : 0)));
+            /* I don't recommend using lines this long, but eh */
+            if ((el.offsetLeft <= trash.el.offsetLeft && (el.offsetTop + el.clientHeight) >= (workspace.clientHeight - trash.el.clientHeight)) || (e.clientX <= (trash.el.offsetLeft + trash.el.clientWidth) && e.clientY >= trash.el.offsetTop)) {
+                el.style.webkitAnimation = 'shrink 0.24s linear forwards';
+                trash.open();
             } else {
-                self.id = (Math.uuid(8));
-                self.left = Math.round((Math.random() * (window.innerWidth / 2)));
-                self.text = '';
-                self.title = DEFAULT_TITLE;
-                self.top = Math.round((Math.random() * (window.innerHeight / 2)));
+                el.style.webkitAnimation = '';
+                trash.close();
             }
-            self.tilt = 15;
-            self.z = ++topZ;
-            return self;
-        } else {
-            return new Tile(arguments);
-        }
-    };
-
-    Tile.prototype = {
-        get date() {
-            return this._date;
         },
 
-        set date(value) {
-            this._date = value;
-        },
-
-        get id() {
-            return this._id;
-        },
-
-        set id(value) {
-            this.tile.id = value;
-            this._id = value;
-        },
-
-        get title() {
-            return this._title;
-        },
-
-        set title(value) {
-            this._title = value;
-        },
-
-        get text() {
-            return this._text;
-        },
-
-        set text(value) {
-            this.tileBody.innerText = value;
-            this._text = value;
-        },
-
-        get left() {
-            return this._left;
-        },
-
-        set left(value) {
-            this.tile.style.left = value + 'px';
-            this._left = value;
-        },
-
-        get tilt() {
-            return this._tilt;
-        },
-
-        set tilt(value) {
-            this._tilt = Math.floor(Math.random() * value);
-            this._tilt = (Math.floor(Math.random() * 2) === 1) ? -this._tilt : this._tilt;
-            this.tile.style.webkitTransform = 'rotate(' + this._tilt + 'deg)';
-        },
-
-        get top () {
-            return this._top;
-        },
-
-        set top(value) {
-            this.tile.style.top = value + 'px';
-            this._top = value;
-        },
-
-        get position() {
-            this._position = this.tile.style.position;
-            return this._position;
-        },
-
-        set position(value) {
-            this.tile.style.position = value;
-            this._position = value;
-        },
-
-        get width() {
-            return this.tile.clientWidth;
-        },
-
-        set width(value) {
-            this.tile.clientWidth = value;
-            this._width = value;
-        },
-
-        get height() {
-            return this.tile.clientHeight;
-        },
-
-        set height(value) {
-            this.tile.clientHeight = value;
-            this._height = value;
-        },
-
-        get z() {
-            return this._z;
-        },
-
-        set z(value) {
-            this.tile.style.zIndex = value;
-            this._z = value;
-        }
-
-    };
-
-    function getTile(el) {
-        for (var i = 0; i < tiles.length; i++) {
-            if (tiles[i].tile === el) {
-                return tiles[i];
+        onMouseUp = function (e) {
+            /* this context: captured.tileElement */
+            var el = this.tileElement;
+            if ((el.offsetLeft <= trash.el.offsetLeft && (el.offsetTop + el.clientHeight) >= (workspace.clientHeight - trash.el.clientHeight)) || (e.clientX <= (trash.el.offsetLeft + trash.el.clientWidth) && e.clientY >= trash.offsetTop)) {
+                removeTile(this.tileElement);
             }
-        }
-    }
+            workspace.removeEventListener('mousemove', el.mouseMoveHandler, true);
+            workspace.removeEventListener('mouseup', el.mouseUpHandler, true);
+            saveNotes();
+        },
 
-    function saveTiles() {
-        var str;
-        localStorage.clear();
-        for(var i = 0; i < tiles.length; i++) {
-            str = {
-                'id' : tiles[i].id,
-                'date' : (typeof tiles[i].date !== undefined) ? tiles[i].date : '',
-                'left' : tiles[i].left,
-                'text' : tiles[i].text,
-                'tilt' : tiles[i].tilt,
-                'title' : tiles[i].title,
-                'top' : tiles[i].top,
-                'z' : tiles[i].z
-            };
-            localStorage.setItem('ordering', JSON.stringify(ordering));
-            localStorage.setItem('tile_' + i, JSON.stringify(str));
-        }
-    }
+        onMouseDown = function (e) {
+            var captured = getTile(e.target, 'tile') || e.target;
+            if (captured.hasOwnProperty('tileElement')) {
+                e.preventDefault();
+                deselectTileElements();
+                selectTileElement(captured);
+                captured.tileElement.startX = e.clientX - captured.tileElement.offsetLeft;
+                captured.tileElement.startY = e.clientY - captured.tileElement.offsetTop;
+                nW = workspace.clientWidth - captured.tileElement.clientWidth;
+                nH = workspace.clientHeight - captured.tileElement.clientHeight;
+                if (!captured.tileElement.hasOwnProperty('mouseMoveHandler')) {
+                    captured.tileElement.mouseMoveHandler = function (e) {
+                        return onMouseMove.apply(captured, arguments);
+                    };
+                    captured.tileElement.mouseUpHandler = function (e) {
+                        return onMouseUp.apply(captured, arguments);
+                    };
+                }
+                workspace.addEventListener('mousemove', captured.tileElement.mouseMoveHandler, true);
+                workspace.addEventListener('mouseup', captured.tileElement.mouseUpHandler, true);
+            } else if (captured === workspace || captured === sidebar) {
+                deselectTileElements();
+                sidebar.clear();
+            }
+        },
 
-    function deselectTile() {
-        var s = document.getElementsByClassName('sel'), str;
-        for (var i = s.length - 1; i >= 0; i--) {
-            s[i].className = 'tile';
-        }
-        txtSidebarTitle.value = DEFAULT_APP_TITLE;
-        txtSidebarTitle.blur();
-        txtSidebarTitle.disabled = true;
-        dueDate.disabled = true;
-        dueDate.value = ''
-        txtSidebarText.innerText = DEFAULT_STARTER_TEXT;
-        txtSidebarText.setAttribute('contenteditable', 'false');
-    }
+        selectTileElement = function (el) {
+            if (el.hasOwnProperty('tileElement')) {
+                getTile(el.tileElement, 'tile');
+                el.tileElement.className = 'tile sel';
+                sidebar.el.style.display = 'block';
+                el.z = topZ++;
+                appForm.elements.title.value = el.titleElement.innerText;
+                appForm.elements.textbox.value = el.bodyElement.innerText;
+                for (var i = appForm.elements.length - 1; i >= 0; i--) {
+                    appForm.elements[i].disabled = false;
+                }
+                sidebar.colorpicker.getColorFromTile(el);
+                appForm.elements.due_date.value = !(typeof el.date === 'undefined') ? el.date : '';
+                appForm.elements.title.focus();
+            }
+        },
 
-    function selectTile(el) {
-        if (el.className.indexOf('tile') > -1) {
-            deselectTile();
-            selectedTile = getTile(el);
-            nW = workspace.clientWidth - selectedTile.width;
-            nH = workspace.clientHeight - selectedTile.height;
-            selectedTile.tile.className = 'tile sel';
-            selectedTile.z = topZ++;
-            txtSidebarText.innerText = selectedTile.text;
-            txtSidebarText.setAttribute('contenteditable', 'true');
-            txtSidebarTitle.value = selectedTile.title;
-            txtSidebarTitle.disabled = false;
-            dueDate.value = (typeof selectedTile.date !== 'undefined') ? selectedTile.date : '';
-            dueDate.disabled = false;
-            txtSidebarTitle.focus();
-            txtSidebarTitle.setSelectionRange(0, txtSidebarTitle.value.length);
-        }
-    }
+        deselectTileElements = function (el) {
+            var classArray, newClass;
+            for (var i in tiles) {
+                if (tiles[i].hasOwnProperty('tileElement')) {
+                    classArray = tiles[i].tileElement.className.split(' ');
+                    newClass = '';
+                    for (var j = classArray.length - 1; j >= 0; j--) {
+                        newClass += (classArray[j] !== 'sel') ? classArray[j] : '';
+                    }
+                    tiles[i].tileElement.className = newClass;
+                }
+            }
+            sidebar.colorpicker.clearSelection();
+        },
 
-    function setPosition() {
-        for (var i = tiles.length - 1; i >= 0; i--) {
-            tiles[i].position = ordering[0][1];
-            if (ordering[0][0] === 'sorted') {
-                tiles[i].tile.style.left = '';
-                tiles[i].tile.style.top = '';
+        Tile = function (args) {
+            if (this instanceof Tile) {
+                var tileElement;
+                this.color = function(c) {
+                    if (!(typeof c === 'undefined')) {
+                        this.note.style.backgroundColor = c;
+                        return c;
+                    } else {
+                        return window.getComputedStyle(this.note).backgroundColor;
+                    }
+                };
+                this.setPos = function (x, y) {
+                    this.tileElement.style.left = x + 'px';
+                    this.left = x;
+                    this.tileElement.style.top = y + 'px';
+                    this.top = y;
+                };
+                /* Create the tile and place it in the workspace */
+                this.tileElement = document.createElement('div');
+                this.tileElement.className = 'tile';
+                workspace.appendChild(this.tileElement);
+                /* Create the note div and place it in the tile */
+                this.note = document.createElement('div');
+                this.note.className = 'note';
+                this.tileElement.appendChild(this.note);
+                /* Create the title div and place it in the note */
+                this.titleElement = document.createElement('div');
+                this.titleElement.className = 'title';
+                this.note.appendChild(this.titleElement);
+                /* Create the pre for the note */
+                this.bodyElement = document.createElement('pre');
+                this.bodyElement.className = 'body';
+                this.note.appendChild(this.bodyElement);
+                if (args) {
+                    for (key in args) {
+                        if (args.hasOwnProperty(key)) {
+                            if (key === 'color') {
+                                this.color(args[key]);
+                            } else {
+                                this[key] = args[key];
+                            }
+                        }
+                    }
+                } else {
+                    this.id = Math.uuid(8);
+                    this.title = '';
+                    this.text = '';
+                    this.left = Math.round((Math.random() *
+                        (workspace.clientWidth -
+                            this.tileElement.clientWidth)));
+                    this.top = Math.round((Math.random() * 
+                        (workspace.clientHeight - 
+                            this.tileElement.clientHeight)));
+                }
+                this.tilt = Math.floor(Math.random() * 8);
+                this.tilt = (Math.floor(Math.random() * 2) === 1) ? -this.tilt : this.tilt;
+                this.tileElement.style.webkitTransform = 'rotate(' + this.tilt + 'deg)';
+                //Populate the tile data
+                this.tileElement.id = this.id;
+                this.tileElement.style.position = 'absolute';
+                this.tileElement.style.left = this.left + 'px';
+                this.tileElement.style.top = this.top + 'px';
+                this.tileElement.style.zIndex = this.z;
+                this.titleElement.innerText = this.title;
+                this.bodyElement.innerText = this.text;
             } else {
-                tiles[i].left = tiles[i].left;
-                tiles[i].top = tiles[i].top;
+                return new Tile();
             }
-        }
+        },
 
-        if (ordering[0][0] === 'sorted') {
-            $(workspace).sortable('enable');
-        } else {
-            $(workspace).sortable('disable');
-            enforceBounds();
-        }
-    }
-
-    function addNewTile (options) {
-        selectedTile = new Tile(options);
-        tiles.push(selectedTile);
-        workspace.appendChild(selectedTile.tile);
-        setPosition();
-        selectTile(selectedTile.tile);
-    }
-
-    function removeTile (thisTile) {
-        deselectTile();
-        if (thisTile.className.indexOf('tile') > -1) {
-            workspace.removeChild(thisTile);
+        getTile = function (node, value) {
+            var result,
+                walk = function step(node, func) {
+                    func(node);
+                    node = node.parentNode;
+                    while(node) {
+                        step(node, func);
+                        node = node.parentNode;
+                    }
+                };
+            walk(node, function (node) {
+                var actual = node.nodeType === 1 && node.className;
+                if (typeof actual === 'string' && (actual.indexOf(value) > -1 || typeof value !== 'string')) {
+                    result = node;
+                }
+            });
             for (var i = tiles.length - 1; i >= 0; i--) {
-                if (tiles[i].tile === thisTile) {
-                    tiles.splice(i, 1);
+                if (tiles[i].tileElement === result) {
+                    currentTile = i;
+                    return tiles[i];
                 }
             }
-            saveTiles();
-        }
-    }
+            return false;
+        },
 
-    function onMouseMove(e) {
-        var nX, nY;
-        e.preventDefault();
-        nX = e.clientX - selectedTile.startX;
-        nY = e.clientY - selectedTile.startY;
-        selectedTile.left = (nX >= 0) ? ((nX <= nW) ? nX : nW) : 0;
-        selectedTile.top = (nY >= 0) ? ((nY <= nH) ? nY : nH) : 0;
-    }
+        createNewTile = function (options) {
+            var newTile;
+            deselectTileElements();
+            newTile = new Tile(options);
+            tiles.push(newTile);
+            selectTileElement(newTile);
+        },
+            
+        removeTile = function (el) {
+            /* this: captured.tileElement */
+            var captured = getTile(el, 'tile');
+            if (captured.hasOwnProperty('tileElement')) {
+                tiles.splice(tiles.indexOf(captured), 1);
+                sidebar.clear();
+                workspace.removeChild(captured.tileElement);
+                trash.playSound();
+                trash.close();
+            }
+        },
 
-    function enforceBounds() {
-        if (ordering[0][0] === 'free') {
+        saveNotes = function () {
+            var str;
+            localStorage.clear();
             for (var i = 0; i < tiles.length; i++) {
-                    tiles[i].left = (tiles[i].left < 0) ? 0 : 
-                        ((tiles[i].left > (workspace.clientWidth - tiles[i].width)) ? 
-                        (workspace.clientWidth - tiles[i].width) : tiles[i].left);
-                    tiles[i].top = (tiles[i].top < 0) ? 0 : 
-                        ((tiles[i].top > (workspace.clientHeight - tiles[i].height)) ? 
-                        (workspace.clientHeight - tiles[i].height) : tiles[i].top);
-            } 
-        }
-    }
-
-    function onMouseUp(e) {
-        window.removeEventListener('mousemove', this.mouseMoveHandler, false);
-        window.removeEventListener('mouseup', this.mouseUpHandler, false);
-        saveTiles();
-    }
-
-    function onMouseDown(e) {
-        captured = e.target.parentNode;
-        if ((ordering[0][0] === 'free') && (captured.className.indexOf('tile') > -1)) {
-            selectTile(captured);
-            selectedTile.startX = e.clientX - selectedTile.tile.offsetLeft;
-            selectedTile.startY = e.clientY - selectedTile.tile.offsetTop;
-            selectedTile.z = ++topZ;
-            if (!(selectedTile.hasOwnProperty('mouseMoveHandler'))) {
-                selectedTile.mouseMoveHandler = function(e) { return onMouseMove.apply(selectedTile, arguments); };
-                selectedTile.mouseUpHandler = function(e) { return onMouseUp.apply(selectedTile, arguments); };
-            }
-
-            e.preventDefault();
-            window.addEventListener('mousemove', selectedTile.mouseMoveHandler, false);
-            window.addEventListener('mouseup', selectedTile.mouseUpHandler, false);
-        }
-    }
-    
-    function onKeyUp(e) {
-        captured = e.target;
-        if (captured === txtSidebarText && (txtSidebarText.getAttribute('contenteditable') === 'true')) {
-            selectedTile.text = txtSidebarText.innerText;
-        }
-
-        if (captured === txtSidebarTitle) {
-            selectedTile.title = txtSidebarTitle.value;
-        }
-    }
-
-    function onKeyDown(e) {
-        captured = e.target;
-        var k = e.keyCode;
-        switch (k) {
-            case 9:
-                if (captured === txtSidebarTitle) {
-                    if (e.shiftKey) {
-                        e.preventDefault();
-                        if (selectedTile.tile.previousSibling) {
-                            selectTile(selectedTile.tile.previousSibling);
-                        } else {
-                            selectTile(tiles[tiles.length - 1].tile);
-                        }
-                    }
-                    saveTiles();
-                    break;
+                str = {
+                    'id'    : tiles[i].id,
+                    'title' : tiles[i].titleElement.innerText,
+                    'text'  : tiles[i].bodyElement.innerText,
+                    'color' : tiles[i].color(),
+                    'left'  : tiles[i].left,
+                    'top'   : tiles[i].top,
+                    'z'     : tiles[i].z,
+                    'date'  : tiles[i].date
                 }
-                
-                if (captured === txtSidebarText) {
-                    if (!e.shiftKey) {
-                        e.preventDefault();
-                        if (selectedTile.tile.nextSibling) {
-                            selectTile(selectedTile.tile.nextSibling);
-                        } else {
-                            selectTile(tiles[0].tile);
-                        }
+                localStorage.setItem('tile_' + i, JSON.stringify(str));
+            }
+        },
+
+        loadNotes = function () {
+            if (localStorage.length > 0) {
+                workspace.parentNode.removeChild(splash);
+                for(var i = 0; i < localStorage.length; i++) {
+                    if (localStorage.hasOwnProperty('tile_' + i)) {
+                        createNewTile(
+                            JSON.parse(localStorage.getItem('tile_' + i))
+                        );
                     }
-                    saveTiles();
-                    break;
                 }
-                break;
-        }
-
-    }
-
-    function onClick(e) {
-        captured = e.target;
-
-        if (captured.className.indexOf('splash') > -1) {
-            workspace.parentNode.removeChild(splash);
-        }
-
-        if (captured.className.indexOf('note') !== -1) {
-            selectTile(captured.parentNode);
-        }
-
-        if (captured.id === 'view') {
-            ordering.push(ordering.shift());
-            setPosition();
-            captured.className = 'button view ' + ordering[1][0];
-            saveTiles();
-        }
-
-        if (captured.className.indexOf('btn-close') > -1) {
-            removeTile(captured.parentNode);
-            saveTiles();
-        }
-        
-        if (captured.id === 'new_note') {
-            addNewTile();
-            saveTiles();
-        }
-        
-        if (captured.id === 'note_save') {
-            saveTiles();
-        }
-
-        if (captured === workspace) {
-            deselectTile();
-            saveTiles();
-        }
-
-    }
-
-    function sortTiles(e, ui) {
-        var arr = $(workspace).sortable('toArray'), dummy = [], i;
-        for (var i = arr.length - 1; i >= 0; i--) {
-            while (tiles[0].tile.id !== arr[i]) {
-                tiles.push(tiles.shift());
+            } else {
+                splash.style.display = 'block';
+                splash.childNodes[1].style.left = (window.innerWidth - splash.childNodes[1].clientWidth) / 2 + 'px';
+                splash.childNodes[1].style.top = (window.innerHeight - splash.childNodes[1].clientHeight) / 2 + 'px';
             }
-            dummy.push(tiles.shift());
-        }
-        tiles = dummy;
-        saveTiles();
-    }
-        
-    window.addEventListener('click', function (e) { return onClick(e); }, true);
-    window.addEventListener('mousedown', function(e) { return onMouseDown(e); }, true);
-    window.addEventListener('resize', function(e) { return enforceBounds(); }, false);
+        },
 
-    sidebar.addEventListener('keyup', function (e) { return onKeyUp(e); }, false);
-    sidebar.addEventListener('keydown', function (e) { return onKeyDown(e); }, false);
-
-        $(workspace).sortable({
-            items: '.tile',
-            revert: '140ms',
-            tolerance: 'pointer',
-            zIndex: '2000',
-            stop : function(e, ui) {
-                return sortTiles.apply(this, arguments);
-            }
-        }).sortable('disable');
-
-        $(dueDate).datepicker({
-            dateFormat: 'yy-mm-dd',
-            minDate: new Date(),
-            onSelect: function(dateText) {
-                selectedTile.date = dateText;
-                saveTiles();
-            }
-        });
-    
-    if (localStorage.length > 0) {
-        workspace.parentNode.removeChild(splash);
-        for(var i = 0; i < localStorage.length; i++) {
-            if(localStorage.hasOwnProperty('tile_' + i)) {
-                addNewTile(JSON.parse(localStorage.getItem('tile_' + i)));
-            }
-        }
-        if (localStorage.hasOwnProperty('ordering')) {
-            ordering = JSON.parse(localStorage.getItem('ordering'));
-            setPosition();
-        }
-    } else {
-        splash.style.display = 'block';
-        splash.childNodes[1].style.left = (window.innerWidth - splash.childNodes[1].clientWidth) / 2 + 'px';
-        splash.childNodes[1].style.top = (window.innerHeight - splash.childNodes[1].clientHeight) / 2 + 'px';
-    }
-    deselectTile();
+        init = function () {
+            workspace.hMouseDown = function (e) { return onMouseDown(e); };
+            window.hClick = function (e) { return onClick(e); };
+            window.addEventListener('click', window.hClick, false);
+            workspace.addEventListener('mousedown', workspace.hMouseDown, true);
+            sidebar.el.addEventListener('click', sidebar.onClick, true);
+            sidebar.el.addEventListener('keydown', sidebar.onKeyDown, true);
+            sidebar.el.addEventListener('keyup', sidebar.onKeyUp, false);
+            sidebar.colorpicker.el.addEventListener('click', sidebar.colorpicker.onClick, true);
+            loadNotes();
+            $('#due_date').datepicker({
+                dateFormat: 'yy-mm-dd',
+                minDate: new Date(),
+                onSelect: function(dateText) {
+                    tiles[currentTile].date = dateText;
+                    saveNotes();
+                }
+            });
+        };
+    init();
 }());

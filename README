@@ -1,8 +1,24 @@
 Sticky Notes - an HTML5 experiment.
 ** Targeted for Chrome and Safari **
-I don't even know what would happen if you tried this in Internet Explorer. I don't recommend trying.
+It works surprisingly well in IE9, although it's not supported or recommended.
 
 This is a project I made to help me learn JavaScript. I wrote as many functions as I thought were reasonable to avoid using heavy JQuery.
+
+Update (1/30/2012):
+    Complete engine rewrite
+    Better delete handling (drag note to trash icon)
+    Added color picker
+    Added title to note
+    Removed 'sortable' option
+    Added Facebook OpenGraph metadata
+
+    Todo:
+        GTasks integration
+        Star/favorite notes
+        Due notifications
+        Fix calendar styling
+        Make notes resizable
+        Fix persistent sidebar tooltips
 
 Future stuff:
     Integration with Google Tasks API
