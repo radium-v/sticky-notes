@@ -88,17 +88,17 @@ var App = (function () {
                 var captured = e.target;
                 var k = e.keyCode;
                 if (k === 9) {
-                    if (captured === appForm.elements.textbox &&
+                    if (captured === appForm.elements['textbox'] &&
                         !e.shiftKey) {
                         e.preventDefault();
                         deselectTileElements();
                         selectTileElement(tiles[currentTile < tiles.length - 1 ? currentTile + 1 : 0]);
-                    } else if (captured === appForm.elements.titlebox &&
+                    } else if (captured === appForm.elements['titlebox'] &&
                         e.shiftKey) {
                         e.preventDefault();
                         deselectTileElements();
                         selectTileElement(tiles[currentTile > 0 ? currentTile - 1 : tiles.length - 1]);
-                        appForm.elements.textbox.focus();
+                        appForm.elements['textbox'].focus();
                     }
                 }
             },
@@ -107,10 +107,10 @@ var App = (function () {
                 var captured = e.target,
                     k = e.keyCode;
                 if (k !== 9) {
-                    if (captured === appForm.elements.titlebox) {
+                    if (captured === appForm.elements['titlebox']) {
                         tiles[currentTile].titleElement.innerText = captured.value;
                     }
-                    if (captured === appForm.elements.textbox) {
+                    if (captured === appForm.elements['textbox']) {
                         tiles[currentTile].bodyElement.innerText = captured.value;
                     }
                 }
@@ -126,7 +126,7 @@ var App = (function () {
                 saveNotes();
             }
 
-            if (captured.hasOwnProperty('className')) {
+            if (captured.className) {
                 if (captured.className.indexOf('splash') > -1) {
                     workspace.parentNode.removeChild(splash);
                 }
@@ -143,9 +143,13 @@ var App = (function () {
             /* I don't recommend using lines this long, but eh */
             if ((el.offsetLeft <= trash.el.offsetLeft && (el.offsetTop + el.clientHeight) >= (workspace.clientHeight - trash.el.clientHeight)) || (e.clientX <= (trash.el.offsetLeft + trash.el.clientWidth) && e.clientY >= trash.el.offsetTop)) {
                 el.style.webkitAnimation = 'shrink 0.24s linear forwards';
+                el.style.MozAnimation = 'shrink 0.24s linear forwards';
+                el.style.animation = 'shrink 0.24s linear forwards';
                 trash.open();
             } else {
                 el.style.webkitAnimation = '';
+                el.style.MozAnimation = '';
+                el.style.animation = '';
                 trash.close();
             }
         },
@@ -192,15 +196,15 @@ var App = (function () {
                 getTile(el.tileElement, 'tile');
                 el.tileElement.className = 'tile sel';
                 sidebar.el.style.display = 'block';
-                el.z = topZ++;
-                appForm.elements.title.value = el.titleElement.innerText;
-                appForm.elements.textbox.value = el.bodyElement.innerText;
+                el.tileElement.z = ++topZ;
+                appForm.elements['title'].value = el.titleElement.innerText;
+                appForm.elements['textbox'].value = el.bodyElement.innerText;
                 for (var i = appForm.elements.length - 1; i >= 0; i--) {
                     appForm.elements[i].disabled = false;
                 }
                 sidebar.colorpicker.getColorFromTile(el);
-                appForm.elements.due_date.value = !(typeof el.date === 'undefined') ? el.date : '';
-                appForm.elements.title.focus();
+                appForm.elements['due_date'].value = !(typeof el.date === 'undefined') ? el.date : '';
+                appForm.elements['title'].focus();
             }
         },
 
