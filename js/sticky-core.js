@@ -1,10 +1,12 @@
 var App = (function () {
     var tiles = [],
+        appForm = document.forms[0],
         currentTile,
         splash = document.getElementById('splash'),
-        workspace = document.getElementById('workspace'),
-        appForm = document.forms[0],
         topZ = 0,
+        workspace = document.getElementById('workspace'),
+        DEFAULT_TITLE_PLACEHOLDER = 'Untitled Note',
+        DEFAULT_TEXT_PLACEHOLDER = 'Click the + button to create a new note.',
 
         trash = {
             el: (function () {
@@ -72,6 +74,8 @@ var App = (function () {
                     appForm.elements[i].disabled = true;
                     appForm.elements[i].blur();
                 }
+                appForm.elements['title'].setAttribute('placeholder', '');
+                appForm.elements['textbox'].setAttribute('placeholder', DEFAULT_TEXT_PLACEHOLDER);
             },
 
             onClick: function (e) {
@@ -198,7 +202,9 @@ var App = (function () {
                 sidebar.el.style.display = 'block';
                 el.tileElement.z = ++topZ;
                 appForm.elements['title'].value = el.titleElement.innerText;
+                appForm.elements['title'].setAttribute('placeholder', DEFAULT_TITLE_PLACEHOLDER);
                 appForm.elements['textbox'].value = el.bodyElement.innerText;
+                appForm.elements['textbox'].setAttribute('placeholder','');
                 for (var i = appForm.elements.length - 1; i >= 0; i--) {
                     appForm.elements[i].disabled = false;
                 }
