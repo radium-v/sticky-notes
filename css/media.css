@@ -304,7 +304,7 @@
 				cursor: pointer;
 				display: none;
 				height: 27px;
-				left: -12px;
+				right: -12px;
 				opacity: 0;
 				position: absolute;
 				top: 5px;
@@ -326,7 +326,7 @@
 				transform: scale(1.4);
 				display: block;
 				opacity: 1;
-				top: -10px
+				top: -5px
 			}
 
 
