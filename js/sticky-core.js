@@ -258,6 +258,15 @@ var App = (function () {
                 this.titleElement = document.createElement('div');
                 this.titleElement.className = 'title';
                 this.note.appendChild(this.titleElement);
+
+                /* Create the delete button in the div*/
+                var deleteButton = document.createElement('div');
+                deleteButton.className = 'close-splash';
+                deleteButton.id = 'deleteButton';
+
+                this.note.appendChild(deleteButton);
+
+
                 /* Create the pre for the note */
                 this.bodyElement = document.createElement('pre');
                 this.bodyElement.className = 'body';
@@ -398,5 +407,12 @@ var App = (function () {
                 }
             });
         };
+
+        $('#deleteButton').live('click', function (e) {
+            var captured = getTile(e.target, 'tile') || e.target;
+            removeTile(e.target);
+            return false;
+        });
+
     init();
 }());
